@@ -1,0 +1,147 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## For Strandskade
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "F:/Vadehavet/Frames_geo"
+
+Strandskade <- file.path(directory,"/Responsafstand_Strandskade.csv")
+Strandskade
+Strandskade <- read.csv(file=Strandskade, header= TRUE)
+str(Strandskade)
+
+Strandskade <- Strandskade[order(Strandskade$height,decreasing = TRUE),]
+Strandskade
+
+
+#Subset efter drone model
+Strandskade_nr <- Strandskade[order(Strandskade$nr_birds,decreasing = TRUE),]
+Strandskade_nr
+
+# For Phantom
+Strandskade_phan <- Strandskade[Strandskade$id == "Phantom", ]
+Strandskade_phan
+
+# For Mavic
+Strandskade_mavic <- Strandskade[Strandskade$id == "Mavic", ]
+Strandskade_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Strandskade_phan <- Strandskade[Strandskade$id == "Phantom", ]
+Strandskade_phan_nr <- Strandskade_nr[Strandskade_nr$id == "Phantom", ]
+Strandskade_phan
+Strandskade_phan_nr
+
+# For Mavic
+Strandskade_mavic <- Strandskade[Strandskade$id == "Mavic", ]
+Strandskade_mavic_nr <- Strandskade_nr[Strandskade_nr$id == "Mavic", ]
+Strandskade_mavic
+Strandskade_mavic_nr
+
+```
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Strandskade_phan_uni.vec <- unique(Strandskade_phan$height)
+Strandskade_phan_perc_vec <- rep('NA',length(Strandskade_phan_uni.vec))
+Strandskade_phan_perc_vec
+for (i in 1:length(unique(Strandskade_phan$height))){
+   Strandskade_phan_perc_vec[i] <- sum((Strandskade_phan$height==Strandskade_phan_uni.vec[i])/length(Strandskade_phan$height))
+}
+Strandskade_phan_cum_vec <- cumsum(Strandskade_phan_perc_vec)
+Strandskade_phan_cum_vec
+```
+
+# For Mavic
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Strandskade_mavic_uni.vec <- unique(Strandskade_mavic$height)
+Strandskade_mavic_perc_vec <- rep('NA',length(Strandskade_mavic_uni.vec))
+Strandskade_mavic_perc_vec
+for (i in 1:length(unique(Strandskade_mavic$height))){
+   Strandskade_mavic_perc_vec[i] <- sum((Strandskade_mavic$height==Strandskade_mavic_uni.vec[i])/length(Strandskade_mavic$height))
+}
+Strandskade_mavic_cum_vec <- cumsum(Strandskade_mavic_perc_vec)
+Strandskade_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Strandskade <- data.frame(Strandskade_phan_uni.vec,Strandskade_phan_cum_vec,id="Phantom")
+names(phan_Strandskade) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Strandskade <- rbind.data.frame(ingen_forstyr,phan_Strandskade)
+phan_Strandskade
+
+
+mavic_Strandskade <- data.frame(Strandskade_mavic_uni.vec,Strandskade_mavic_cum_vec,id="Mavic")
+names(mavic_Strandskade) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Strandskade <- rbind.data.frame(ingen_forstyr,mavic_Strandskade)
+mavic_Strandskade
+
+# combine dataframes
+
+Strandskade_dat <- rbind.data.frame(mavic_Strandskade)
+Strandskade_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Strandskade_phan_nr
+
+# combine dataframes
+
+Strandskade_nr_dat <- rbind.data.frame(Strandskade_mavic_nr)
+Strandskade_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p <- ggplot(data = Strandskade_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p <- ggplot(data = Strandskade_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+

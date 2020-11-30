@@ -1,0 +1,2209 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## For shelduck
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/frames_geo"
+
+Gravand <- file.path(directory,"/Responsafstand_gravand.csv")
+Gravand
+Gravand <- read.csv(file=Gravand, header= TRUE)
+str(Gravand)
+
+Gravand <- Gravand[order(Gravand$height,decreasing = TRUE),]
+Gravand
+
+#Subset efter drone model både flyvninger og nr_bird
+Gravand_nr <- Gravand[order(Gravand$nr_birds,decreasing = TRUE),]
+Gravand_nr
+
+# For Phantom
+Grav_phan <- Gravand[Gravand$id == "Phantom", ]
+Grav_phan_nr <- Gravand_nr[Gravand_nr$id == "Phantom", ]
+Grav_phan
+Grav_phan_nr
+
+# For Mavic
+Grav_mavic <- Gravand[Gravand$id == "Mavic", ]
+Grav_mavic_nr <- Gravand_nr[Gravand_nr$id == "Mavic", ]
+Grav_mavic
+Grav_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Grav_phan.vec <- Grav_phan$height
+Grav_phan_perc_vec <- rep('NA',length(Grav_phan.vec))
+for (i in 1:length(Grav_phan$height)){
+   Grav_phan_perc_vec[i] <- 100/(length(Grav_phan.vec))
+}
+Grav_phan_cum_vec <- cumsum(Grav_phan_perc_vec)/100
+Grav_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Grav_mavic.vec <- Grav_mavic$height
+Grav_mavic.vec
+Grav_mavic_perc_vec <- rep('NA',length(Grav_mavic.vec))
+for (i in 1:length(Grav_mavic$height)){
+   Grav_mavic_perc_vec[i] <- 100/(length(Grav_mavic.vec))
+}
+Grav_mavic_cum_vec <- cumsum(Grav_mavic_perc_vec)/100
+Grav_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_grav <- data.frame(Grav_phan.vec,Grav_phan_cum_vec,id="Phantom")
+names(phan_grav) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_grav <- rbind.data.frame(ingen_forstyr,phan_grav)
+phan_grav
+
+
+mavic_grav <- data.frame(Grav_mavic.vec,Grav_mavic_cum_vec,id="Mavic")
+names(mavic_grav) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_grav <- rbind.data.frame(ingen_forstyr,mavic_grav)
+mavic_grav
+
+# combine dataframes
+
+Gravand_dat <- rbind.data.frame(phan_grav,mavic_grav)
+Gravand_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Grav_phan_nr
+
+# combine dataframes
+
+Gravand_nr_dat <- rbind.data.frame(Grav_phan_nr,Grav_mavic_nr)
+Gravand_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Gravand <- ggplot(data = Gravand_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Gravand <- p_Gravand + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.3) + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Shelduck") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+p_Gravand
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Gravand_nr <- ggplot(data = Gravand_nr_dat, aes(x = nr_birds, y = height, group = id,
+                               color = id))
+p_Gravand_nr <- p_Gravand_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Shelduck") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+p_Gravand_nr
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Gravand_mavic_number.vec <- (Gravand_mavic_nr$nr_birds)
+Gravand_mavic_number.vec
+Gravand_mavic_perc_weighted_vec <- Gravand_mavic_number.vec / sum(Gravand_mavic_number.vec)
+Gravand_mavic_perc_weighted_cum_vec <- cumsum(Gravand_mavic_perc_weighted_vec)
+Gravand_mavic_perc_weighted_vec <- cbind.data.frame(Gravand_mavic_nr$height, Gravand_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Gravand_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Gravand_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Gravand_mavic_number.vec <- (Gravand_mavic_nr$nr_birds)
+Gravand_mavic_number.vec
+Gravand_mavic_perc_weighted_vec <- Gravand_mavic_number.vec / sum(Gravand_mavic_number.vec)
+Gravand_mavic_perc_weighted_cum_vec <- cumsum(Gravand_mavic_perc_weighted_vec)
+Gravand_mavic_perc_weighted_vec <- cbind.data.frame(Gravand_mavic_nr$height, Gravand_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Gravand_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Gravand_mavic_perc_weighted_vec
+```
+##########################
+
+
+
+
+
+## For Stormmåge
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Stormmåge <- file.path(directory,"/Responsafstand_Stormmåge.csv")
+Stormmåge
+Stormmåge <- read.csv(file=Stormmåge, header= TRUE)
+str(Stormmåge)
+
+Stormmåge <- Stormmåge[order(Stormmåge$height,decreasing = TRUE),]
+Stormmåge
+
+
+#Subset efter drone model
+Stormmåge_nr <- Stormmåge[order(Stormmåge$nr_birds,decreasing = TRUE),]
+Stormmåge_nr
+
+# For Phantom
+Stormmåge_phan <- Stormmåge[Stormmåge$id == "Phantom", ]
+Stormmåge_phan
+
+# For Mavic
+Stormmåge_mavic <- Stormmåge[Stormmåge$id == "Mavic", ]
+Stormmåge_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Stormmåge_phan <- Stormmåge[Stormmåge$id == "Phantom", ]
+Stormmåge_phan_nr <- Stormmåge_nr[Stormmåge_nr$id == "Phantom", ]
+Stormmåge_phan
+Stormmåge_phan_nr
+
+# For Mavic
+Stormmåge_mavic <- Stormmåge[Stormmåge$id == "Mavic", ]
+Stormmåge_mavic_nr <- Stormmåge_nr[Stormmåge_nr$id == "Mavic", ]
+Stormmåge_mavic
+Stormmåge_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Stormmåge_phan.vec <- Stormmåge_phan$height
+Stormmåge_phan_perc_vec <- rep('NA',length(Stormmåge_phan.vec))
+for (i in 1:length(Stormmåge_phan$height)){
+   Stormmåge_phan_perc_vec[i] <- 100/(length(Stormmåge_phan.vec))
+}
+Stormmåge_phan_cum_vec <- cumsum(Stormmåge_phan_perc_vec)/100
+Stormmåge_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Stormmåge_mavic.vec <- Stormmåge_mavic$height
+Stormmåge_mavic.vec
+Stormmåge_mavic_perc_vec <- rep('NA',length(Stormmåge_mavic.vec))
+for (i in 1:length(Stormmåge_mavic$height)){
+   Stormmåge_mavic_perc_vec[i] <- 100/(length(Stormmåge_mavic.vec))
+}
+Stormmåge_mavic_cum_vec <- cumsum(Stormmåge_mavic_perc_vec)/100
+Stormmåge_mavic_cum_vec
+```
+
+
+Lav dataframes
+
+```{r}
+phan_Stormmåge <- data.frame(Stormmåge_phan.vec,Stormmåge_phan_cum_vec,id="Phantom")
+names(phan_Stormmåge) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Stormmåge <- rbind.data.frame(ingen_forstyr,phan_Stormmåge)
+phan_Stormmåge
+
+
+mavic_Stormmåge <- data.frame(Stormmåge_mavic.vec,Stormmåge_mavic_cum_vec,id="Mavic")
+names(mavic_Stormmåge) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Stormmåge <- rbind.data.frame(ingen_forstyr,mavic_Stormmåge)
+mavic_Stormmåge
+
+# combine dataframes
+
+Stormmåge_dat <- rbind.data.frame(phan_Stormmåge,mavic_Stormmåge)
+Stormmåge_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Stormmåge_phan_nr
+
+# combine dataframes
+
+Stormmåge_nr_dat <- rbind.data.frame(Stormmåge_phan_nr,Stormmåge_mavic_nr)
+Stormmåge_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Stormmåge <- ggplot(data = Stormmåge_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Stormmåge + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.4) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(-0.01,1.01) +
+  ggtitle("Escape distance Common gull") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Stormmåge_nr <- ggplot(data = Stormmåge_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Stormmåge_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Common gull") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsåg med vægtning ift. antal
+Først phantom
+
+```{r}
+Stormmåge_mavic_number.vec <- (Stormmåge_mavic_nr$nr_birds)
+Stormmåge_mavic_number.vec
+Stormmåge_mavic_perc_weighted_vec <- Stormmåge_mavic_number.vec / sum(Stormmåge_mavic_number.vec)
+Stormmåge_mavic_perc_weighted_cum_vec <- cumsum(Stormmåge_mavic_perc_weighted_vec)
+Stormmåge_mavic_perc_weighted_vec <- cbind.data.frame(Stormmåge_mavic_nr$height, Stormmåge_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Stormmåge_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Stormmåge_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Stormmåge_mavic_number.vec <- (Stormmåge_mavic_nr$nr_birds)
+Stormmåge_mavic_number.vec
+Stormmåge_mavic_perc_weighted_vec <- Stormmåge_mavic_number.vec / sum(Stormmåge_mavic_number.vec)
+Stormmåge_mavic_perc_weighted_cum_vec <- cumsum(Stormmåge_mavic_perc_weighted_vec)
+Stormmåge_mavic_perc_weighted_vec <- cbind.data.frame(Stormmåge_mavic_nr$height, Stormmåge_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Stormmåge_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Stormmåge_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Storspove
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Storspove <- file.path(directory,"/Responsafstand_Storspove.csv")
+Storspove
+Storspove <- read.csv(file=Storspove, header= TRUE)
+str(Storspove)
+
+Storspove <- Storspove[order(Storspove$height,decreasing = TRUE),]
+Storspove
+
+
+#Subset efter drone model
+Storspove_nr <- Storspove[order(Storspove$nr_birds,decreasing = TRUE),]
+Storspove_nr
+
+# For Phantom
+Storspove_phan <- Storspove[Storspove$id == "Phantom", ]
+Storspove_phan
+
+# For Mavic
+Storspove_mavic <- Storspove[Storspove$id == "Mavic", ]
+Storspove_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Storspove_phan <- Storspove[Storspove$id == "Phantom", ]
+Storspove_phan_nr <- Storspove_nr[Storspove_nr$id == "Phantom", ]
+Storspove_phan
+Storspove_phan_nr
+
+# For Mavic
+Storspove_mavic <- Storspove[Storspove$id == "Mavic", ]
+Storspove_mavic_nr <- Storspove_nr[Storspove_nr$id == "Mavic", ]
+Storspove_mavic
+Storspove_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Storspove_phan.vec <- Storspove_phan$height
+Storspove_phan_perc_vec <- rep('NA',length(Storspove_phan.vec))
+for (i in 1:length(Storspove_phan$height)){
+   Storspove_phan_perc_vec[i] <- 100/(length(Storspove_phan.vec))
+}
+Storspove_phan_cum_vec <- cumsum(Storspove_phan_perc_vec)/100
+Storspove_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Storspove_mavic.vec <- Storspove_mavic$height
+Storspove_mavic.vec
+Storspove_mavic_perc_vec <- rep('NA',length(Storspove_mavic.vec))
+for (i in 1:length(Storspove_mavic$height)){
+   Storspove_mavic_perc_vec[i] <- 100/(length(Storspove_mavic.vec))
+}
+Storspove_mavic_cum_vec <- cumsum(Storspove_mavic_perc_vec)/100
+Storspove_mavic_cum_vec
+```
+
+
+Lav dataframes
+
+```{r}
+phan_Storspove <- data.frame(Storspove_phan.vec,Storspove_phan_cum_vec,id="Phantom")
+names(phan_Storspove) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Storspove <- rbind.data.frame(ingen_forstyr,phan_Storspove)
+phan_Storspove
+
+
+mavic_Storspove <- data.frame(Storspove_mavic.vec,Storspove_mavic_cum_vec,id="Mavic")
+names(mavic_Storspove) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Storspove <- rbind.data.frame(ingen_forstyr,mavic_Storspove)
+mavic_Storspove
+
+# combine dataframes
+
+Storspove_dat <- rbind.data.frame(phan_Storspove,mavic_Storspove)
+Storspove_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Storspove_phan_nr
+
+# combine dataframes
+
+Storspove_nr_dat <- rbind.data.frame(Storspove_phan_nr,Storspove_mavic_nr)
+Storspove_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Storspove <- ggplot(data = Storspove_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Storspove + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Curlew") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Storspove_nr <- ggplot(data = Storspove_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Storspove_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Curlew") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Storspove_mavic_number.vec <- (Storspove_mavic_nr$nr_birds)
+Storspove_mavic_number.vec
+Storspove_mavic_perc_weighted_vec <- Storspove_mavic_number.vec / sum(Storspove_mavic_number.vec)
+Storspove_mavic_perc_weighted_cum_vec <- cumsum(Storspove_mavic_perc_weighted_vec)
+Storspove_mavic_perc_weighted_vec <- cbind.data.frame(Storspove_mavic_nr$height, Storspove_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Storspove_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Storspove_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Storspove_mavic_number.vec <- (Storspove_mavic_nr$nr_birds)
+Storspove_mavic_number.vec
+Storspove_mavic_perc_weighted_vec <- Storspove_mavic_number.vec / sum(Storspove_mavic_number.vec)
+Storspove_mavic_perc_weighted_cum_vec <- cumsum(Storspove_mavic_perc_weighted_vec)
+Storspove_mavic_perc_weighted_vec <- cbind.data.frame(Storspove_mavic_nr$height, Storspove_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Storspove_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Storspove_mavic_perc_weighted_vec
+```
+##########################
+
+
+
+## For Ryle
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Ryle <- file.path(directory,"/Responsafstand_Ryle.csv")
+Ryle
+Ryle <- read.csv(file=Ryle, header= TRUE)
+str(Ryle)
+
+Ryle <- Ryle[order(Ryle$height,decreasing = TRUE),]
+Ryle
+
+
+#Subset efter drone model
+Ryle_nr <- Ryle[order(Ryle$nr_birds,decreasing = TRUE),]
+Ryle_nr
+
+# For Phantom
+Ryle_phan <- Ryle[Ryle$id == "Phantom", ]
+Ryle_phan
+
+# For Mavic
+Ryle_mavic <- Ryle[Ryle$id == "Mavic", ]
+Ryle_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Ryle_phan <- Ryle[Ryle$id == "Phantom", ]
+Ryle_phan_nr <- Ryle_nr[Ryle_nr$id == "Phantom", ]
+Ryle_phan
+Ryle_phan_nr
+
+# For Mavic
+Ryle_mavic <- Ryle[Ryle$id == "Mavic", ]
+Ryle_mavic_nr <- Ryle_nr[Ryle_nr$id == "Mavic", ]
+Ryle_mavic
+Ryle_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Ryle_phan.vec <- Ryle_phan$height
+Ryle_phan_perc_vec <- rep('NA',length(Ryle_phan.vec))
+for (i in 1:length(Ryle_phan$height)){
+   Ryle_phan_perc_vec[i] <- 100/(length(Ryle_phan.vec))
+}
+Ryle_phan_cum_vec <- cumsum(Ryle_phan_perc_vec)/100
+Ryle_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Ryle_mavic.vec <- Ryle_mavic$height
+Ryle_mavic.vec
+Ryle_mavic_perc_vec <- rep('NA',length(Ryle_mavic.vec))
+for (i in 1:length(Ryle_mavic$height)){
+   Ryle_mavic_perc_vec[i] <- 100/(length(Ryle_mavic.vec))
+}
+Ryle_mavic_cum_vec <- cumsum(Ryle_mavic_perc_vec)/100
+Ryle_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Ryle <- data.frame(Ryle_phan.vec,Ryle_phan_cum_vec,id="Phantom")
+names(phan_Ryle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Ryle <- rbind.data.frame(ingen_forstyr,phan_Ryle)
+phan_Ryle
+
+
+mavic_Ryle <- data.frame(Ryle_mavic.vec,Ryle_mavic_cum_vec,id="Mavic")
+names(mavic_Ryle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Ryle <- rbind.data.frame(ingen_forstyr,mavic_Ryle)
+mavic_Ryle
+
+# combine dataframes
+
+Ryle_dat <- rbind.data.frame(phan_Ryle,mavic_Ryle)
+Ryle_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Ryle_phan_nr
+
+# combine dataframes
+
+Ryle_nr_dat <- rbind.data.frame(Ryle_phan_nr,Ryle_mavic_nr)
+Ryle_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Ryle <- ggplot(data = Ryle_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Ryle + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.5) + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Dunlin") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Ryle_nr <- ggplot(data = Ryle_nr_dat, aes(x = nr_birds, y = height, group = id,
+                               color = id))
+p_Ryle_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Dunlin") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Ryle_mavic_number.vec <- (Ryle_mavic_nr$nr_birds)
+Ryle_mavic_number.vec
+Ryle_mavic_perc_weighted_vec <- Ryle_mavic_number.vec / sum(Ryle_mavic_number.vec)
+Ryle_mavic_perc_weighted_cum_vec <- cumsum(Ryle_mavic_perc_weighted_vec)
+Ryle_mavic_perc_weighted_vec <- cbind.data.frame(Ryle_mavic_nr$height, Ryle_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Ryle_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Ryle_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Ryle_mavic_number.vec <- (Ryle_mavic_nr$nr_birds)
+Ryle_mavic_number.vec
+Ryle_mavic_perc_weighted_vec <- Ryle_mavic_number.vec / sum(Ryle_mavic_number.vec)
+Ryle_mavic_perc_weighted_cum_vec <- cumsum(Ryle_mavic_perc_weighted_vec)
+Ryle_mavic_perc_weighted_vec <- cbind.data.frame(Ryle_mavic_nr$height, Ryle_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Ryle_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Ryle_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Vibe
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Vibe <- file.path(directory,"/Responsafstand_Vibe.csv")
+Vibe
+Vibe <- read.csv(file=Vibe, header= TRUE)
+str(Vibe)
+
+Vibe <- Vibe[order(Vibe$height,decreasing = TRUE),]
+Vibe
+
+
+#Subset efter drone model
+Vibe_nr <- Vibe[order(Vibe$nr_birds,decreasing = TRUE),]
+Vibe_nr
+
+# For Phantom
+Vibe_phan <- Vibe[Vibe$id == "Phantom", ]
+Vibe_phan
+
+# For Mavic
+Vibe_mavic <- Vibe[Vibe$id == "Mavic", ]
+Vibe_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Vibe_phan <- Vibe[Vibe$id == "Phantom", ]
+Vibe_phan_nr <- Vibe_nr[Vibe_nr$id == "Phantom", ]
+Vibe_phan
+Vibe_phan_nr
+
+# For Mavic
+Vibe_mavic <- Vibe[Vibe$id == "Mavic", ]
+Vibe_mavic_nr <- Vibe_nr[Vibe_nr$id == "Mavic", ]
+Vibe_mavic
+Vibe_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Vibe_phan.vec <- Vibe_phan$height
+Vibe_phan_perc_vec <- rep('NA',length(Vibe_phan.vec))
+for (i in 1:length(Vibe_phan$height)){
+   Vibe_phan_perc_vec[i] <- 100/(length(Vibe_phan.vec))
+}
+Vibe_phan_cum_vec <- cumsum(Vibe_phan_perc_vec)/100
+Vibe_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Vibe_mavic.vec <- Vibe_mavic$height
+Vibe_mavic.vec
+Vibe_mavic_perc_vec <- rep('NA',length(Vibe_mavic.vec))
+for (i in 1:length(Vibe_mavic$height)){
+   Vibe_mavic_perc_vec[i] <- 100/(length(Vibe_mavic.vec))
+}
+Vibe_mavic_cum_vec <- cumsum(Vibe_mavic_perc_vec)/100
+Vibe_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Vibe <- data.frame(Vibe_phan.vec,Vibe_phan_cum_vec,id="Phantom")
+names(phan_Vibe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Vibe <- rbind.data.frame(ingen_forstyr,phan_Vibe)
+phan_Vibe
+
+
+mavic_Vibe <- data.frame(Vibe_mavic.vec,Vibe_mavic_cum_vec,id="Mavic")
+names(mavic_Vibe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Vibe <- rbind.data.frame(ingen_forstyr,mavic_Vibe)
+mavic_Vibe
+
+# combine dataframes
+
+Vibe_dat <- rbind.data.frame(phan_Vibe,mavic_Vibe)
+Vibe_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Vibe_phan_nr
+
+# combine dataframes
+
+Vibe_nr_dat <- rbind.data.frame(Vibe_phan_nr,Vibe_mavic_nr)
+Vibe_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Vibe <- ggplot(data = Vibe_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Vibe + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Northern lapwing") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Vibe_nr <- ggplot(data = Vibe_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Vibe_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Northern lapwing") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Vibe_mavic_number.vec <- (Vibe_mavic_nr$nr_birds)
+Vibe_mavic_number.vec
+Vibe_mavic_perc_weighted_vec <- Vibe_mavic_number.vec / sum(Vibe_mavic_number.vec)
+Vibe_mavic_perc_weighted_cum_vec <- cumsum(Vibe_mavic_perc_weighted_vec)
+Vibe_mavic_perc_weighted_vec <- cbind.data.frame(Vibe_mavic_nr$height, Vibe_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Vibe_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Vibe_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Vibe_mavic_number.vec <- (Vibe_mavic_nr$nr_birds)
+Vibe_mavic_number.vec
+Vibe_mavic_perc_weighted_vec <- Vibe_mavic_number.vec / sum(Vibe_mavic_number.vec)
+Vibe_mavic_perc_weighted_cum_vec <- cumsum(Vibe_mavic_perc_weighted_vec)
+Vibe_mavic_perc_weighted_vec <- cbind.data.frame(Vibe_mavic_nr$height, Vibe_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Vibe_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Vibe_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Kobbersneppe
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Kobbersneppe <- file.path(directory,"/Responsafstand_Kobbersneppe.csv")
+Kobbersneppe
+Kobbersneppe <- read.csv(file=Kobbersneppe, header= TRUE)
+str(Kobbersneppe)
+
+Kobbersneppe <- Kobbersneppe[order(Kobbersneppe$height,decreasing = TRUE),]
+Kobbersneppe
+
+
+#Subset efter drone model
+Kobbersneppe_nr <- Kobbersneppe[order(Kobbersneppe$nr_birds,decreasing = TRUE),]
+Kobbersneppe_nr
+
+# For Phantom
+Kobbersneppe_phan <- Kobbersneppe[Kobbersneppe$id == "Phantom", ]
+Kobbersneppe_phan
+
+# For Mavic
+Kobbersneppe_mavic <- Kobbersneppe[Kobbersneppe$id == "Mavic", ]
+Kobbersneppe_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Kobbersneppe_phan <- Kobbersneppe[Kobbersneppe$id == "Phantom", ]
+Kobbersneppe_phan_nr <- Kobbersneppe_nr[Kobbersneppe_nr$id == "Phantom", ]
+Kobbersneppe_phan
+Kobbersneppe_phan_nr
+
+# For Mavic
+Kobbersneppe_mavic <- Kobbersneppe[Kobbersneppe$id == "Mavic", ]
+Kobbersneppe_mavic_nr <- Kobbersneppe_nr[Kobbersneppe_nr$id == "Mavic", ]
+Kobbersneppe_mavic
+Kobbersneppe_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Kobbersneppe_phan.vec <- Kobbersneppe_phan$height
+Kobbersneppe_phan_perc_vec <- rep('NA',length(Kobbersneppe_phan.vec))
+for (i in 1:length(Kobbersneppe_phan$height)){
+   Kobbersneppe_phan_perc_vec[i] <- 100/(length(Kobbersneppe_phan.vec))
+}
+Kobbersneppe_phan_cum_vec <- cumsum(Kobbersneppe_phan_perc_vec)/100
+Kobbersneppe_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Kobbersneppe_mavic.vec <- Kobbersneppe_mavic$height
+Kobbersneppe_mavic.vec
+Kobbersneppe_mavic_perc_vec <- rep('NA',length(Kobbersneppe_mavic.vec))
+for (i in 1:length(Kobbersneppe_mavic$height)){
+   Kobbersneppe_mavic_perc_vec[i] <- 100/(length(Kobbersneppe_mavic.vec))
+}
+Kobbersneppe_mavic_cum_vec <- cumsum(Kobbersneppe_mavic_perc_vec)/100
+Kobbersneppe_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Kobbersneppe <- data.frame(Kobbersneppe_phan.vec,Kobbersneppe_phan_cum_vec,id="Phantom")
+names(phan_Kobbersneppe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Kobbersneppe <- rbind.data.frame(ingen_forstyr,phan_Kobbersneppe)
+phan_Kobbersneppe
+
+
+mavic_Kobbersneppe <- data.frame(Kobbersneppe_mavic.vec,Kobbersneppe_mavic_cum_vec,id="Mavic")
+names(mavic_Kobbersneppe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Kobbersneppe <- rbind.data.frame(ingen_forstyr,mavic_Kobbersneppe)
+mavic_Kobbersneppe
+
+# combine dataframes
+
+Kobbersneppe_dat <- rbind.data.frame(phan_Kobbersneppe,mavic_Kobbersneppe)
+Kobbersneppe_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Kobbersneppe_phan_nr
+
+# combine dataframes
+
+Kobbersneppe_nr_dat <- rbind.data.frame(Kobbersneppe_phan_nr, Kobbersneppe_mavic_nr)
+Kobbersneppe_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Kobbersneppe <- ggplot(data = Kobbersneppe_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Kobbersneppe + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Bar-tailed godwit") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Kobbersneppe_nr <- ggplot(data = Kobbersneppe_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Kobbersneppe_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Bar-tailed godwit") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Kobbersneppe_mavic_number.vec <- (Kobbersneppe_mavic_nr$nr_birds)
+Kobbersneppe_mavic_number.vec
+Kobbersneppe_mavic_perc_weighted_vec <- Kobbersneppe_mavic_number.vec / sum(Kobbersneppe_mavic_number.vec)
+Kobbersneppe_mavic_perc_weighted_cum_vec <- cumsum(Kobbersneppe_mavic_perc_weighted_vec)
+Kobbersneppe_mavic_perc_weighted_vec <- cbind.data.frame(Kobbersneppe_mavic_nr$height, Kobbersneppe_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Kobbersneppe_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Kobbersneppe_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Kobbersneppe_mavic_number.vec <- (Kobbersneppe_mavic_nr$nr_birds)
+Kobbersneppe_mavic_number.vec
+Kobbersneppe_mavic_perc_weighted_vec <- Kobbersneppe_mavic_number.vec / sum(Kobbersneppe_mavic_number.vec)
+Kobbersneppe_mavic_perc_weighted_cum_vec <- cumsum(Kobbersneppe_mavic_perc_weighted_vec)
+Kobbersneppe_mavic_perc_weighted_vec <- cbind.data.frame(Kobbersneppe_mavic_nr$height, Kobbersneppe_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Kobbersneppe_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Kobbersneppe_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Hjejle
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Hjejle <- file.path(directory,"/Responsafstand_Hjejle.csv")
+Hjejle
+Hjejle <- read.csv(file=Hjejle, header= TRUE)
+str(Hjejle)
+
+Hjejle <- Hjejle[order(Hjejle$height,decreasing = TRUE),]
+Hjejle
+
+
+#Subset efter drone model
+Hjejle_nr <- Hjejle[order(Hjejle$nr_birds,decreasing = TRUE),]
+Hjejle_nr
+
+# For Phantom
+Hjejle_phan <- Hjejle[Hjejle$id == "Phantom", ]
+Hjejle_phan
+
+# For Mavic
+Hjejle_mavic <- Hjejle[Hjejle$id == "Mavic", ]
+Hjejle_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Hjejle_phan <- Hjejle[Hjejle$id == "Phantom", ]
+Hjejle_phan_nr <- Hjejle_nr[Hjejle_nr$id == "Phantom", ]
+Hjejle_phan
+Hjejle_phan_nr
+
+# For Mavic
+Hjejle_mavic <- Hjejle[Hjejle$id == "Mavic", ]
+Hjejle_mavic_nr <- Hjejle_nr[Hjejle_nr$id == "Mavic", ]
+Hjejle_mavic
+Hjejle_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Hjejle_phan.vec <- Hjejle_phan$height
+Hjejle_phan_perc_vec <- rep('NA',length(Hjejle_phan.vec))
+for (i in 1:length(Hjejle_phan$height)){
+   Hjejle_phan_perc_vec[i] <- 100/(length(Hjejle_phan.vec))
+}
+Hjejle_phan_cum_vec <- cumsum(Hjejle_phan_perc_vec)/100
+Hjejle_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Hjejle_mavic.vec <- Hjejle_mavic$height
+Hjejle_mavic.vec
+Hjejle_mavic_perc_vec <- rep('NA',length(Hjejle_mavic.vec))
+for (i in 1:length(Hjejle_mavic$height)){
+   Hjejle_mavic_perc_vec[i] <- 100/(length(Hjejle_mavic.vec))
+}
+Hjejle_mavic_cum_vec <- cumsum(Hjejle_mavic_perc_vec)/100
+Hjejle_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Hjejle <- data.frame(Hjejle_phan.vec,Hjejle_phan_cum_vec,id="Phantom")
+names(phan_Hjejle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Hjejle <- rbind.data.frame(ingen_forstyr,phan_Hjejle)
+phan_Hjejle
+
+
+mavic_Hjejle <- data.frame(Hjejle_mavic.vec,Hjejle_mavic_cum_vec,id="Mavic")
+names(mavic_Hjejle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Hjejle <- rbind.data.frame(ingen_forstyr,mavic_Hjejle)
+mavic_Hjejle
+
+# combine dataframes
+
+Hjejle_dat <- rbind.data.frame(phan_Hjejle, mavic_Hjejle)
+Hjejle_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Hjejle_phan_nr
+
+# combine dataframes
+
+Hjejle_nr_dat <- rbind.data.frame(Hjejle_phan_nr, Hjejle_mavic_nr)
+Hjejle_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Hjejle <- ggplot(data = Hjejle_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Hjejle + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Hjejle_nr <- ggplot(data = Hjejle_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Hjejle_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Hjejle_mavic_number.vec <- (Hjejle_mavic_nr$nr_birds)
+Hjejle_mavic_number.vec
+Hjejle_mavic_perc_weighted_vec <- Hjejle_mavic_number.vec / sum(Hjejle_mavic_number.vec)
+Hjejle_mavic_perc_weighted_cum_vec <- cumsum(Hjejle_mavic_perc_weighted_vec)
+Hjejle_mavic_perc_weighted_vec <- cbind.data.frame(Hjejle_mavic_nr$height, Hjejle_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Hjejle_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Hjejle_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Hjejle_mavic_number.vec <- (Hjejle_mavic_nr$nr_birds)
+Hjejle_mavic_number.vec
+Hjejle_mavic_perc_weighted_vec <- Hjejle_mavic_number.vec / sum(Hjejle_mavic_number.vec)
+Hjejle_mavic_perc_weighted_cum_vec <- cumsum(Hjejle_mavic_perc_weighted_vec)
+Hjejle_mavic_perc_weighted_vec <- cbind.data.frame(Hjejle_mavic_nr$height, Hjejle_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Hjejle_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Hjejle_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For KLyde
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Klyde <- file.path(directory,"/Responsafstand_Klyde.csv")
+Klyde
+Klyde <- read.csv(file=Klyde, header= TRUE)
+str(Klyde)
+
+Klyde <- Klyde[order(Klyde$height,decreasing = TRUE),]
+Klyde
+
+
+#Subset efter drone model
+Klyde_nr <- Klyde[order(Klyde$nr_birds,decreasing = TRUE),]
+Klyde_nr
+
+# For Phantom
+Klyde_phan <- Klyde[Klyde$id == "Phantom", ]
+Klyde_phan
+
+# For Mavic
+Klyde_mavic <- Klyde[Klyde$id == "Mavic", ]
+Klyde_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Klyde_phan <- Klyde[Klyde$id == "Phantom", ]
+Klyde_phan_nr <- Klyde_nr[Klyde_nr$id == "Phantom", ]
+Klyde_phan
+Klyde_phan_nr
+
+# For Mavic
+Klyde_mavic <- Klyde[Klyde$id == "Mavic", ]
+Klyde_mavic_nr <- Klyde_nr[Klyde_nr$id == "Mavic", ]
+Klyde_mavic
+Klyde_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Klyde_phan.vec <- Klyde_phan$height
+Klyde_phan_perc_vec <- rep('NA',length(Klyde_phan.vec))
+for (i in 1:length(Klyde_phan$height)){
+   Klyde_phan_perc_vec[i] <- 100/(length(Klyde_phan.vec))
+}
+Klyde_phan_cum_vec <- cumsum(Klyde_phan_perc_vec)/100
+Klyde_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Klyde_mavic.vec <- Klyde_mavic$height
+Klyde_mavic.vec
+Klyde_mavic_perc_vec <- rep('NA',length(Klyde_mavic.vec))
+for (i in 1:length(Klyde_mavic$height)){
+   Klyde_mavic_perc_vec[i] <- 100/(length(Klyde_mavic.vec))
+}
+Klyde_mavic_cum_vec <- cumsum(Klyde_mavic_perc_vec)/100
+Klyde_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Klyde <- data.frame(Klyde_phan.vec,Klyde_phan_cum_vec,id="Phantom")
+names(phan_Klyde) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Klyde <- rbind.data.frame(ingen_forstyr,phan_Klyde)
+phan_Klyde
+
+
+mavic_Klyde <- data.frame(Klyde_mavic.vec,Klyde_mavic_cum_vec,id="Mavic")
+names(mavic_Klyde) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Klyde <- rbind.data.frame(ingen_forstyr,mavic_Klyde)
+mavic_Klyde
+
+# combine dataframes
+
+Klyde_dat <- rbind.data.frame(phan_Klyde,mavic_Klyde)
+Klyde_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Klyde_phan_nr
+
+# combine dataframes
+
+Klyde_nr_dat <- rbind.data.frame(Klyde_phan_nr,Klyde_mavic_nr)
+Klyde_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Klyde <- ggplot(data = Klyde_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Klyde + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Avocet") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Klyde_nr <- ggplot(data = Klyde_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Klyde_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Avocet") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Klyde_mavic_number.vec <- (Klyde_mavic_nr$nr_birds)
+Klyde_mavic_number.vec
+Klyde_mavic_perc_weighted_vec <- Klyde_mavic_number.vec / sum(Klyde_mavic_number.vec)
+Klyde_mavic_perc_weighted_cum_vec <- cumsum(Klyde_mavic_perc_weighted_vec)
+Klyde_mavic_perc_weighted_vec <- cbind.data.frame(Klyde_mavic_nr$height, Klyde_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Klyde_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Klyde_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Klyde_mavic_number.vec <- (Klyde_mavic_nr$nr_birds)
+Klyde_mavic_number.vec
+Klyde_mavic_perc_weighted_vec <- Klyde_mavic_number.vec / sum(Klyde_mavic_number.vec)
+Klyde_mavic_perc_weighted_cum_vec <- cumsum(Klyde_mavic_perc_weighted_vec)
+Klyde_mavic_perc_weighted_vec <- cbind.data.frame(Klyde_mavic_nr$height, Klyde_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Klyde_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Klyde_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Islandsk
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Islandsk <- file.path(directory,"/Responsafstand_Islandsk.csv")
+Islandsk
+Islandsk <- read.csv(file=Islandsk, header= TRUE)
+str(Islandsk)
+
+Islandsk <- Islandsk[order(Islandsk$height,decreasing = TRUE),]
+Islandsk
+
+
+#Subset efter drone model
+Islandsk_nr <- Islandsk[order(Islandsk$nr_birds,decreasing = TRUE),]
+Islandsk_nr
+
+# For Phantom
+Islandsk_phan <- Islandsk[Islandsk$id == "Phantom", ]
+Islandsk_phan
+
+# For Mavic
+Islandsk_mavic <- Islandsk[Islandsk$id == "Mavic", ]
+Islandsk_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Islandsk_phan <- Islandsk[Islandsk$id == "Phantom", ]
+Islandsk_phan_nr <- Islandsk_nr[Islandsk_nr$id == "Phantom", ]
+Islandsk_phan
+Islandsk_phan_nr
+
+# For Mavic
+Islandsk_mavic <- Islandsk[Islandsk$id == "Mavic", ]
+Islandsk_mavic_nr <- Islandsk_nr[Islandsk_nr$id == "Mavic", ]
+Islandsk_mavic
+Islandsk_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Islandsk_phan.vec <- Islandsk_phan$height
+Islandsk_phan_perc_vec <- rep('NA',length(Islandsk_phan.vec))
+for (i in 1:length(Islandsk_phan$height)){
+   Islandsk_phan_perc_vec[i] <- 100/(length(Islandsk_phan.vec))
+}
+Islandsk_phan_cum_vec <- cumsum(Islandsk_phan_perc_vec)/100
+Islandsk_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Islandsk_mavic.vec <- Islandsk_mavic$height
+Islandsk_mavic.vec
+Islandsk_mavic_perc_vec <- rep('NA',length(Islandsk_mavic.vec))
+for (i in 1:length(Islandsk_mavic$height)){
+   Islandsk_mavic_perc_vec[i] <- 100/(length(Islandsk_mavic.vec))
+}
+Islandsk_mavic_cum_vec <- cumsum(Islandsk_mavic_perc_vec)/100
+Islandsk_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Islandsk <- data.frame(Islandsk_phan.vec,Islandsk_phan_cum_vec,id="Phantom")
+names(phan_Islandsk) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Islandsk <- rbind.data.frame(ingen_forstyr,phan_Islandsk)
+phan_Islandsk
+
+
+mavic_Islandsk <- data.frame(Islandsk_mavic.vec,Islandsk_mavic_cum_vec,id="Mavic")
+names(mavic_Islandsk) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Islandsk <- rbind.data.frame(ingen_forstyr,mavic_Islandsk)
+mavic_Islandsk
+
+# combine dataframes
+
+Islandsk_dat <- rbind.data.frame(phan_Islandsk, mavic_Islandsk)
+Islandsk_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Islandsk_phan_nr
+
+# combine dataframes
+
+Islandsk_nr_dat <- rbind.data.frame(Islandsk_phan_nr, Islandsk_mavic_nr)
+Islandsk_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Islandsk <- ggplot(data = Islandsk_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Islandsk + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Islandsk_nr <- ggplot(data = Islandsk_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Islandsk_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Golden plover") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Islandsk_mavic_number.vec <- (Islandsk_mavic_nr$nr_birds)
+Islandsk_mavic_number.vec
+Islandsk_mavic_perc_weighted_vec <- Islandsk_mavic_number.vec / sum(Islandsk_mavic_number.vec)
+Islandsk_mavic_perc_weighted_cum_vec <- cumsum(Islandsk_mavic_perc_weighted_vec)
+Islandsk_mavic_perc_weighted_vec <- cbind.data.frame(Islandsk_mavic_nr$height, Islandsk_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Islandsk_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Islandsk_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Islandsk_mavic_number.vec <- (Islandsk_mavic_nr$nr_birds)
+Islandsk_mavic_number.vec
+Islandsk_mavic_perc_weighted_vec <- Islandsk_mavic_number.vec / sum(Islandsk_mavic_number.vec)
+Islandsk_mavic_perc_weighted_cum_vec <- cumsum(Islandsk_mavic_perc_weighted_vec)
+Islandsk_mavic_perc_weighted_vec <- cbind.data.frame(Islandsk_mavic_nr$height, Islandsk_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Islandsk_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Islandsk_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Grågås
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Grågås <- file.path(directory,"/Responsafstand_Grågås.csv")
+Grågås
+Grågås <- read.csv(file=Grågås, header= TRUE)
+str(Grågås)
+
+Grågås <- Grågås[order(Grågås$height,decreasing = TRUE),]
+Grågås
+
+
+#Subset efter drone model
+Grågås_nr <- Grågås[order(Grågås$nr_birds,decreasing = TRUE),]
+Grågås_nr
+
+# For Phantom
+Grågås_phan <- Grågås[Grågås$id == "Phantom", ]
+Grågås_phan
+
+# For Mavic
+Grågås_mavic <- Grågås[Grågås$id == "Mavic", ]
+Grågås_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Grågås_phan <- Grågås[Grågås$id == "Phantom", ]
+Grågås_phan_nr <- Grågås_nr[Grågås_nr$id == "Phantom", ]
+Grågås_phan
+Grågås_phan_nr
+
+# For Mavic
+Grågås_mavic <- Grågås[Grågås$id == "Mavic", ]
+Grågås_mavic_nr <- Grågås_nr[Grågås_nr$id == "Mavic", ]
+Grågås_mavic
+Grågås_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Grågås_phan.vec <- Grågås_phan$height
+Grågås_phan_perc_vec <- rep('NA',length(Grågås_phan.vec))
+for (i in 1:length(Grågås_phan$height)){
+   Grågås_phan_perc_vec[i] <- 100/(length(Grågås_phan.vec))
+}
+Grågås_phan_cum_vec <- cumsum(Grågås_phan_perc_vec)/100
+Grågås_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Grågås_mavic.vec <- Grågås_mavic$height
+Grågås_mavic.vec
+Grågås_mavic_perc_vec <- rep('NA',length(Grågås_mavic.vec))
+for (i in 1:length(Grågås_mavic$height)){
+   Grågås_mavic_perc_vec[i] <- 100/(length(Grågås_mavic.vec))
+}
+Grågås_mavic_cum_vec <- cumsum(Grågås_mavic_perc_vec)/100
+Grågås_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Grågås <- data.frame(Grågås_phan.vec,Grågås_phan_cum_vec,id="Phantom")
+names(phan_Grågås) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Grågås <- rbind.data.frame(ingen_forstyr,phan_Grågås)
+phan_Grågås
+
+
+mavic_Grågås <- data.frame(Grågås_mavic.vec,Grågås_mavic_cum_vec,id="Mavic")
+names(mavic_Grågås) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Grågås <- rbind.data.frame(ingen_forstyr,mavic_Grågås)
+mavic_Grågås
+
+# combine dataframes
+
+Grågås_dat <- rbind.data.frame(phan_Grågås,mavic_Grågås)
+Grågås_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Grågås_phan_nr
+
+# combine dataframes
+
+Grågås_nr_dat <- rbind.data.frame(Grågås_phan_nr,Grågås_mavic_nr)
+Grågås_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Grågås <- ggplot(data = Grågås_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Grågås + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Greylag goose") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Grågås_nr <- ggplot(data = Grågås_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Grågås_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Greylag goose") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Grågås_mavic_number.vec <- (Grågås_mavic_nr$nr_birds)
+Grågås_mavic_number.vec
+Grågås_mavic_perc_weighted_vec <- Grågås_mavic_number.vec / sum(Grågås_mavic_number.vec)
+Grågås_mavic_perc_weighted_cum_vec <- cumsum(Grågås_mavic_perc_weighted_vec)
+Grågås_mavic_perc_weighted_vec <- cbind.data.frame(Grågås_mavic_nr$height, Grågås_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Grågås_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Grågås_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Grågås_mavic_number.vec <- (Grågås_mavic_nr$nr_birds)
+Grågås_mavic_number.vec
+Grågås_mavic_perc_weighted_vec <- Grågås_mavic_number.vec / sum(Grågås_mavic_number.vec)
+Grågås_mavic_perc_weighted_cum_vec <- cumsum(Grågås_mavic_perc_weighted_vec)
+Grågås_mavic_perc_weighted_vec <- cbind.data.frame(Grågås_mavic_nr$height, Grågås_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Grågås_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Grågås_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Bramgås
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Bramgås <- file.path(directory,"/Responsafstand_Bramgås.csv")
+Bramgås
+Bramgås <- read.csv(file=Bramgås, header= TRUE)
+str(Bramgås)
+
+Bramgås <- Bramgås[order(Bramgås$height,decreasing = TRUE),]
+Bramgås
+
+
+#Subset efter drone model
+Bramgås_nr <- Bramgås[order(Bramgås$nr_birds,decreasing = TRUE),]
+Bramgås_nr
+
+# For Phantom
+Bramgås_phan <- Bramgås[Bramgås$id == "Phantom", ]
+Bramgås_phan
+
+# For Mavic
+Bramgås_mavic <- Bramgås[Bramgås$id == "Mavic", ]
+Bramgås_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Bramgås_phan <- Bramgås[Bramgås$id == "Phantom", ]
+Bramgås_phan_nr <- Bramgås_nr[Bramgås_nr$id == "Phantom", ]
+Bramgås_phan
+Bramgås_phan_nr
+
+# For Mavic
+Bramgås_mavic <- Bramgås[Bramgås$id == "Mavic", ]
+Bramgås_mavic_nr <- Bramgås_nr[Bramgås_nr$id == "Mavic", ]
+Bramgås_mavic
+Bramgås_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Bramgås_phan.vec <- Bramgås_phan$height
+Bramgås_phan_perc_vec <- rep('NA',length(Bramgås_phan.vec))
+for (i in 1:length(Bramgås_phan$height)){
+   Bramgås_phan_perc_vec[i] <- 100/(length(Bramgås_phan.vec))
+}
+Bramgås_phan_cum_vec <- cumsum(Bramgås_phan_perc_vec)/100
+Bramgås_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Bramgås_mavic.vec <- Bramgås_mavic$height
+Bramgås_mavic.vec
+Bramgås_mavic_perc_vec <- rep('NA',length(Bramgås_mavic.vec))
+for (i in 1:length(Bramgås_mavic$height)){
+   Bramgås_mavic_perc_vec[i] <- 100/(length(Bramgås_mavic.vec))
+}
+Bramgås_mavic_cum_vec <- cumsum(Bramgås_mavic_perc_vec)/100
+Bramgås_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Bramgås <- data.frame(Bramgås_phan.vec,Bramgås_phan_cum_vec,id="Phantom")
+names(phan_Bramgås) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Bramgås <- rbind.data.frame(ingen_forstyr,phan_Bramgås)
+phan_Bramgås
+
+
+mavic_Bramgås <- data.frame(Bramgås_mavic.vec,Bramgås_mavic_cum_vec,id="Mavic")
+names(mavic_Bramgås) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Bramgås <- rbind.data.frame(ingen_forstyr,mavic_Bramgås)
+mavic_Bramgås
+
+# combine dataframes
+
+Bramgås_dat <- rbind.data.frame(phan_Bramgås,mavic_Bramgås)
+Bramgås_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Bramgås_phan_nr
+
+# combine dataframes
+
+Bramgås_nr_dat <- rbind.data.frame(Bramgås_phan_nr,Bramgås_mavic_nr)
+Bramgås_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Bramgås <- ggplot(data = Bramgås_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Bramgås + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Barnecle goose") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Bramgås_nr <- ggplot(data = Bramgås_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p_Bramgås_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Barnecle goose") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Bramgås_mavic_number.vec <- (Bramgås_mavic_nr$nr_birds)
+Bramgås_mavic_number.vec
+Bramgås_mavic_perc_weighted_vec <- Bramgås_mavic_number.vec / sum(Bramgås_mavic_number.vec)
+Bramgås_mavic_perc_weighted_cum_vec <- cumsum(Bramgås_mavic_perc_weighted_vec)
+Bramgås_mavic_perc_weighted_vec <- cbind.data.frame(Bramgås_mavic_nr$height, Bramgås_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Bramgås_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Bramgås_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Bramgås_mavic_number.vec <- (Bramgås_mavic_nr$nr_birds)
+Bramgås_mavic_number.vec
+Bramgås_mavic_perc_weighted_vec <- Bramgås_mavic_number.vec / sum(Bramgås_mavic_number.vec)
+Bramgås_mavic_perc_weighted_cum_vec <- cumsum(Bramgås_mavic_perc_weighted_vec)
+Bramgås_mavic_perc_weighted_vec <- cbind.data.frame(Bramgås_mavic_nr$height, Bramgås_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Bramgås_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Bramgås_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For Strandskade
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/Frames_geo"
+
+Strandskade <- file.path(directory,"/Responsafstand_Strandskade.csv")
+Strandskade
+Strandskade <- read.csv(file=Strandskade, header= TRUE)
+str(Strandskade)
+
+Strandskade <- Strandskade[order(Strandskade$height,decreasing = TRUE),]
+Strandskade
+
+
+#Subset efter drone model
+Strandskade_nr <- Strandskade[order(Strandskade$nr_birds,decreasing = TRUE),]
+Strandskade_nr
+
+# For Phantom
+Strandskade_phan <- Strandskade[Strandskade$id == "Phantom", ]
+Strandskade_phan
+
+# For Mavic
+Strandskade_mavic <- Strandskade[Strandskade$id == "Mavic", ]
+Strandskade_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Strandskade_phan <- Strandskade[Strandskade$id == "Phantom", ]
+Strandskade_phan_nr <- Strandskade_nr[Strandskade_nr$id == "Phantom", ]
+Strandskade_phan
+Strandskade_phan_nr
+
+# For Mavic
+Strandskade_mavic <- Strandskade[Strandskade$id == "Mavic", ]
+Strandskade_mavic_nr <- Strandskade_nr[Strandskade_nr$id == "Mavic", ]
+Strandskade_mavic
+Strandskade_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Strandskade_phan.vec <- Strandskade_phan$height
+Strandskade_phan_perc_vec <- rep('NA',length(Strandskade_phan.vec))
+for (i in 1:length(Strandskade_phan$height)){
+   Strandskade_phan_perc_vec[i] <- 100/(length(Strandskade_phan.vec))
+}
+Strandskade_phan_cum_vec <- cumsum(Strandskade_phan_perc_vec)/100
+Strandskade_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Strandskade_mavic.vec <- Strandskade_mavic$height
+Strandskade_mavic.vec
+Strandskade_mavic_perc_vec <- rep('NA',length(Strandskade_mavic.vec))
+for (i in 1:length(Strandskade_mavic$height)){
+   Strandskade_mavic_perc_vec[i] <- 100/(length(Strandskade_mavic.vec))
+}
+Strandskade_mavic_cum_vec <- cumsum(Strandskade_mavic_perc_vec)/100
+Strandskade_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Strandskade <- data.frame(Strandskade_phan.vec,Strandskade_phan_cum_vec,id="Phantom")
+names(phan_Strandskade) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Strandskade <- rbind.data.frame(ingen_forstyr,phan_Strandskade)
+phan_Strandskade
+
+
+mavic_Strandskade <- data.frame(Strandskade_mavic.vec,Strandskade_mavic_cum_vec,id="Mavic")
+names(mavic_Strandskade) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Strandskade <- rbind.data.frame(ingen_forstyr,mavic_Strandskade)
+mavic_Strandskade
+
+# combine dataframes
+
+Strandskade_dat <- rbind.data.frame(mavic_Strandskade,phan_Strandskade)
+Strandskade_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Strandskade_phan_nr
+
+# combine dataframes
+
+Strandskade_nr_dat <- rbind.data.frame(Strandskade_phan_nr,Strandskade_mavic_nr)
+Strandskade_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p <- ggplot(data = Strandskade_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Oystercatcher") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p <- ggplot(data = Strandskade_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Oystercatcher") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Strandskade_mavic_number.vec <- (Strandskade_mavic_nr$nr_birds)
+Strandskade_mavic_number.vec
+Strandskade_mavic_perc_weighted_vec <- Strandskade_mavic_number.vec / sum(Strandskade_mavic_number.vec)
+Strandskade_mavic_perc_weighted_cum_vec <- cumsum(Strandskade_mavic_perc_weighted_vec)
+Strandskade_mavic_perc_weighted_vec <- cbind.data.frame(Strandskade_mavic_nr$height, Strandskade_mavic_perc_weighted_cum_vec,'Phantom')
+colnames(Strandskade_mavic_perc_weighted_vec) <- c('height','weighted','Phantom')
+Strandskade_mavic_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Strandskade_mavic_number.vec <- (Strandskade_mavic_nr$nr_birds)
+Strandskade_mavic_number.vec
+Strandskade_mavic_perc_weighted_vec <- Strandskade_mavic_number.vec / sum(Strandskade_mavic_number.vec)
+Strandskade_mavic_perc_weighted_cum_vec <- cumsum(Strandskade_mavic_perc_weighted_vec)
+Strandskade_mavic_perc_weighted_vec <- cbind.data.frame(Strandskade_mavic_nr$height, Strandskade_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Strandskade_mavic_perc_weighted_vec) <- c('height','weighted','Mavic')
+Strandskade_mavic_perc_weighted_vec
+```
+##########################
+
+
+## For wigeon
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "G:/Vadehavet/frames_geo"
+
+Pibeand <- file.path(directory,"/Responsafstand_pibeand.csv")
+Pibeand
+Pibeand <- read.csv(file=Pibeand, header= TRUE)
+str(Pibeand)
+
+Pibeand <- Pibeand[order(Pibeand$height,decreasing = TRUE),]
+Pibeand
+
+#Subset eGter drone model både Glyvninger og nr_bird
+Pibeand_nr <- Pibeand[order(Pibeand$nr_birds,decreasing = TRUE),]
+Pibeand_nr
+
+# For Phantom
+Pibeand_phan <- Pibeand[Pibeand$id == "Phantom", ]
+Pibeand_phan_nr <- Pibeand_nr[Pibeand_nr$id == "Phantom", ]
+Pibeand_phan
+Pibeand_phan_nr
+
+# For Mavic
+Pibeand_mavic <- Pibeand[Pibeand$id == "Mavic", ]
+Pibeand_mavic_nr <- Pibeand_nr[Pibeand_nr$id == "Mavic", ]
+Pibeand_mavic
+Pibeand_mavic_nr
+
+```
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Pibeand_phan.vec <- Pibeand_phan$height
+Pibeand_phan_perc_vec <- rep('NA',length(Pibeand_phan.vec))
+for (i in 1:length(Pibeand_phan$height)){
+   Pibeand_phan_perc_vec[i] <- 100/(length(Pibeand_phan.vec))
+}
+Pibeand_phan_cum_vec <- cumsum(Pibeand_phan_perc_vec)/100
+Pibeand_phan_cum_vec
+
+
+```
+
+# For Mavic
+
+First we find the number of  flyover heigths with (),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Pibeand_mavic.vec <- Pibeand_mavic$height
+Pibeand_mavic.vec
+Pibeand_mavic_perc_vec <- rep('NA',length(Pibeand_mavic.vec))
+for (i in 1:length(Pibeand_mavic$height)){
+   Pibeand_mavic_perc_vec[i] <- 100/(length(Pibeand_mavic.vec))
+}
+Pibeand_mavic_cum_vec <- cumsum(Pibeand_mavic_perc_vec)/100
+Pibeand_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Pibeand <- data.frame(Pibeand_phan.vec,Pibeand_phan_cum_vec,id="Phantom")
+names(phan_Pibeand) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Pibeand <- rbind.data.frame(ingen_forstyr,phan_Pibeand)
+phan_Pibeand
+
+
+mavic_Pibeand <- data.frame(Pibeand_mavic.vec,Pibeand_mavic_cum_vec,id="Mavic")
+names(mavic_Pibeand) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Pibeand <- rbind.data.frame(ingen_forstyr,mavic_Pibeand)
+mavic_Pibeand
+
+# combine dataframes
+
+Pibeand_dat <- rbind.data.frame(phan_Pibeand,mavic_Pibeand)
+Pibeand_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Pibeand_phan_nr
+
+# combine dataframes
+
+Pibeand_nr_dat <- rbind.data.frame(Pibeand_phan_nr,Pibeand_mavic_nr)
+Pibeand_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p_Pibeand <- ggplot(data = Pibeand_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p_Pibeand <- p_Pibeand + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.3) + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Wigeon") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+p_Pibeand
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p_Pibeand_nr <- ggplot(data = Pibeand_nr_dat, aes(x = nr_birds, y = height, group = id,
+                               color = id))
+p_Pibeand_nr <- p_Pibeand_nr + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Wigeon") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+p_Pibeand_nr
+
+
+```
+
+##########################
+Forsøg med vægtning ift. antal
+Først phantom
+
+```{r}
+Pibeand_phan_number.vec <- (Pibeand_phan_nr$nr_birds)
+Pibeand_phan_number.vec
+Pibeand_phan_perc_weighted_vec <- Pibeand_phan_number.vec / sum(Pibeand_phan_number.vec)
+Pibeand_phan_perc_weighted_cum_vec <- cumsum(Pibeand_phan_perc_weighted_vec)
+Pibeand_phan_perc_weighted_vec <- cbind.data.frame(Pibeand_phan_nr$height, Pibeand_phan_perc_weighted_cum_vec,'Phantom')
+colnames(Pibeand_phan_perc_weighted_vec) <- c('height','weighted','UAV')
+Pibeand_phan_perc_weighted_vec
+```
+
+Og så for mavic
+```{r}
+Pibeand_mavic_number.vec <- (Pibeand_mavic_nr$nr_birds)
+Pibeand_mavic_number.vec
+Pibeand_mavic_perc_weighted_vec <- Pibeand_mavic_number.vec / sum(Pibeand_mavic_number.vec)
+Pibeand_mavic_perc_weighted_cum_vec <- cumsum(Pibeand_mavic_perc_weighted_vec)
+Pibeand_mavic_perc_weighted_vec <- cbind.data.frame(Pibeand_mavic_nr$height, Pibeand_mavic_perc_weighted_cum_vec,'Mavic')
+colnames(Pibeand_mavic_perc_weighted_vec) <- c('height','weighted','UAV')
+Pibeand_mavic_perc_weighted_vec
+
+## Combine dataframes
+
+Pibeand_weighted <- rbind.data.frame(Pibeand_phan_perc_weighted_vec,Pibeand_mavic_perc_weighted_vec)
+Pibeand_weighted
+```
+##########################
+
+
+```{r}
+p_Pibeand_w <- ggplot(data = Pibeand_weighted, aes(x = weighted, y = height, group = UAV,
+                               color = UAV))
+p_Pibeand_w + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.3) + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Wigeon") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+p_Pibeand
+```
+
+

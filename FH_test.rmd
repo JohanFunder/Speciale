@@ -1,0 +1,96 @@
+---
+title: "Untitled"
+author: "Jonas Gehrlein"
+date: "8 dec 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+Data as escape distance for the two used UAV models
+
+```{r}
+phantom <- c(50,60,41,43,43,42,47,51,52,50)
+phantom <- as.integer(sort(phantom, decreasing = TRUE))
+```
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+phan_uni.vec <- unique(phantom)
+phan_perc_vec <- rep('NA',length(phan_uni.vec))
+
+for (i in 1:length(unique(phantom))){
+   phan_perc_vec[i] <- sum((phantom==phan_uni.vec[i])/length(phantom))
+}
+phan_cum_vec <- cumsum(phan_perc_vec)
+
+```
+
+
+```{r}
+mavic <- c(30,20,41,33,23,12,27,41,42,30)
+mavic <- as.integer(sort(mavic, decreasing = TRUE))
+```
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+mavic_uni.vec <- unique(mavic)
+mavic_perc_vec <- rep('NA',length(mavic_uni.vec))
+for (i in 1:length(unique(mavic))){
+   mavic_perc_vec[i] <- sum((mavic==mavic_uni.vec[i])/length(mavic))
+}
+
+mavic_perc_vec <- as.numeric(mavic_perc_vec)
+mavic_cum_vec <- cumsum(mavic_perc_vec)
+mavic_perc_vec
+
+```
+
+Lav dataframes
+
+```{r}
+phan1 <- data.frame(phan_uni.vec,phan_cum_vec,id="Phantom")
+names(phan1) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan1 <- rbind.data.frame(ingen_forstyr,phan1)
+phan1
+
+
+mavic1 <- data.frame(mavic_uni.vec,mavic_cum_vec,id="Mavic")
+names(mavic1) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic1 <- rbind.data.frame(ingen_forstyr,mavic1)
+mavic1
+
+# combine dataframes
+
+ex_dat_1 <- rbind.data.frame(phan1,mavic1)
+ex_dat_1
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p <- ggplot(data = ex_dat_1, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.3) + ylim(0, 100) + xlim(0,1) +
+  ggtitle("Escape distance Shelduck") + theme(plot.title = element_text(hjust = 0.5))
+ + xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+

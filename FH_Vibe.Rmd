@@ -1,0 +1,147 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## For Vibe
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "F:/Vadehavet/Frames_geo"
+
+Vibe <- file.path(directory,"/Responsafstand_Vibe.csv")
+Vibe
+Vibe <- read.csv(file=Vibe, header= TRUE)
+str(Vibe)
+
+Vibe <- Vibe[order(Vibe$height,decreasing = TRUE),]
+Vibe
+
+
+#Subset efter drone model
+Vibe_nr <- Vibe[order(Vibe$nr_birds,decreasing = TRUE),]
+Vibe_nr
+
+# For Phantom
+Vibe_phan <- Vibe[Vibe$id == "Phantom", ]
+Vibe_phan
+
+# For Mavic
+Vibe_mavic <- Vibe[Vibe$id == "Mavic", ]
+Vibe_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Vibe_phan <- Vibe[Vibe$id == "Phantom", ]
+Vibe_phan_nr <- Vibe_nr[Vibe_nr$id == "Phantom", ]
+Vibe_phan
+Vibe_phan_nr
+
+# For Mavic
+Vibe_mavic <- Vibe[Vibe$id == "Mavic", ]
+Vibe_mavic_nr <- Vibe_nr[Vibe_nr$id == "Mavic", ]
+Vibe_mavic
+Vibe_mavic_nr
+
+```
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Vibe_phan_uni.vec <- unique(Vibe_phan$height)
+Vibe_phan_perc_vec <- rep('NA',length(Vibe_phan_uni.vec))
+Vibe_phan_perc_vec
+for (i in 1:length(unique(Vibe_phan$height))){
+   Vibe_phan_perc_vec[i] <- sum((Vibe_phan$height==Vibe_phan_uni.vec[i])/length(Vibe_phan$height))
+}
+Vibe_phan_cum_vec <- cumsum(Vibe_phan_perc_vec)
+Vibe_phan_cum_vec
+```
+
+# For Mavic
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Vibe_mavic_uni.vec <- unique(Vibe_mavic$height)
+Vibe_mavic_perc_vec <- rep('NA',length(Vibe_mavic_uni.vec))
+Vibe_mavic_perc_vec
+for (i in 1:length(unique(Vibe_mavic$height))){
+   Vibe_mavic_perc_vec[i] <- sum((Vibe_mavic$height==Vibe_mavic_uni.vec[i])/length(Vibe_mavic$height))
+}
+Vibe_mavic_cum_vec <- cumsum(Vibe_mavic_perc_vec)
+Vibe_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Vibe <- data.frame(Vibe_phan_uni.vec,Vibe_phan_cum_vec,id="Phantom")
+names(phan_Vibe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Vibe <- rbind.data.frame(ingen_forstyr,phan_Vibe)
+phan_Vibe
+
+
+mavic_Vibe <- data.frame(Vibe_mavic_uni.vec,Vibe_mavic_cum_vec,id="Mavic")
+names(mavic_Vibe) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Vibe <- rbind.data.frame(ingen_forstyr,mavic_Vibe)
+mavic_Vibe
+
+# combine dataframes
+
+Vibe_dat <- rbind.data.frame(phan_Vibe,mavic_Vibe)
+Vibe_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Vibe_phan_nr
+
+# combine dataframes
+
+Vibe_nr_dat <- rbind.data.frame(Vibe_phan_nr,Vibe_mavic_nr)
+Vibe_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p <- ggplot(data = Vibe_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.7) + scale_fill_manual(values=c("firebrick1","deepskyblue1"),aesthetics = "colour") + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Northern lapwing") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p <- ggplot(data = Vibe_nr_dat, aes(x = nr_birds, y = height, group = id,
+                              color = id))
+p + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + scale_fill_manual(values=c("deepskyblue1","firebrick1"),aesthetics = "colour") + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Northern lapwing") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+

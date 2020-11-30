@@ -1,0 +1,147 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## For Ryle
+Load data as escape distance for the two used UAV models
+
+
+```{r}
+
+directory <- "F:/Vadehavet/Frames_geo"
+
+Ryle <- file.path(directory,"/Responsafstand_Ryle.csv")
+Ryle
+Ryle <- read.csv(file=Ryle, header= TRUE)
+str(Ryle)
+
+Ryle <- Ryle[order(Ryle$height,decreasing = TRUE),]
+Ryle
+
+
+#Subset efter drone model
+Ryle_nr <- Ryle[order(Ryle$nr_birds,decreasing = TRUE),]
+Ryle_nr
+
+# For Phantom
+Ryle_phan <- Ryle[Ryle$id == "Phantom", ]
+Ryle_phan
+
+# For Mavic
+Ryle_mavic <- Ryle[Ryle$id == "Mavic", ]
+Ryle_mavic
+
+#Subset efter drone model både flyvninger og nr_bird
+# For Phantom
+Ryle_phan <- Ryle[Ryle$id == "Phantom", ]
+Ryle_phan_nr <- Ryle_nr[Ryle_nr$id == "Phantom", ]
+Ryle_phan
+Ryle_phan_nr
+
+# For Mavic
+Ryle_mavic <- Ryle[Ryle$id == "Mavic", ]
+Ryle_mavic_nr <- Ryle_nr[Ryle_nr$id == "Mavic", ]
+Ryle_mavic
+Ryle_mavic_nr
+
+```
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Ryle_phan_uni.vec <- unique(Ryle_phan$height)
+Ryle_phan_perc_vec <- rep('NA',length(Ryle_phan_uni.vec))
+Ryle_phan_perc_vec
+for (i in 1:length(unique(Ryle_phan$height))){
+   Ryle_phan_perc_vec[i] <- sum((Ryle_phan$height==Ryle_phan_uni.vec[i])/length(Ryle_phan$height))
+}
+Ryle_phan_cum_vec <- cumsum(Ryle_phan_perc_vec)
+Ryle_phan_cum_vec
+```
+
+# For Mavic
+
+First we find the number of unique flyover heigths with unique(),
+then we find the percentage of flights which are at that flyover height and 
+
+```{r}
+Ryle_mavic_uni.vec <- unique(Ryle_mavic$height)
+Ryle_mavic_perc_vec <- rep('NA',length(Ryle_mavic_uni.vec))
+Ryle_mavic_perc_vec
+for (i in 1:length(unique(Ryle_mavic$height))){
+   Ryle_mavic_perc_vec[i] <- sum((Ryle_mavic$height==Ryle_mavic_uni.vec[i])/length(Ryle_mavic$height))
+}
+Ryle_mavic_cum_vec <- cumsum(Ryle_mavic_perc_vec)
+Ryle_mavic_cum_vec
+```
+
+Lav dataframes
+
+```{r}
+phan_Ryle <- data.frame(Ryle_phan_uni.vec,Ryle_phan_cum_vec,id="Phantom")
+names(phan_Ryle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Phantom")
+
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+phan_Ryle <- rbind.data.frame(ingen_forstyr,phan_Ryle)
+phan_Ryle
+
+
+mavic_Ryle <- data.frame(Ryle_mavic_uni.vec,Ryle_mavic_cum_vec,id="Mavic")
+names(mavic_Ryle) <- c("hoejde","percent","id")
+ingen_forstyr <- cbind.data.frame(c(100),0,"Mavic")
+names(ingen_forstyr) <- c("hoejde","percent","id")
+
+mavic_Ryle <- rbind.data.frame(ingen_forstyr,mavic_Ryle)
+mavic_Ryle
+
+# combine dataframes
+
+Ryle_dat <- rbind.data.frame(phan_Ryle,mavic_Ryle)
+Ryle_dat
+
+```
+
+Lav dataframes for nr fugle
+
+```{r}
+Ryle_phan_nr
+
+# combine dataframes
+
+Ryle_nr_dat <- rbind.data.frame(Ryle_phan_nr,Ryle_mavic_nr)
+Ryle_nr_dat
+
+```
+
+
+We then use ggplot to visualize each drone by itself
+
+```{r}
+p <- ggplot(data = Ryle_dat, aes(x = percent, y = hoejde, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "loess", se = FALSE,  fullrange = TRUE, span = 0.5) + ylim(0, 100) + xlim(0,1.01) +
+  ggtitle("Escape distance Dunlin") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Percent disturbed") + ylab("Flying altitude")
+
+
+```
+
+We then use ggplot to visualize each drone by itself (nr fugle)
+
+```{r}
+p <- ggplot(data = Ryle_nr_dat, aes(x = nr_birds, y = height, group = id,
+                               color = id))
+p + geom_point() +
+  geom_smooth(method = "gam", se = FALSE,  fullrange = TRUE, span = 0.5) + xlim(0,1000) + ylim(0, 100) +
+  ggtitle("Escape distance Dunlin") + theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Flock size disturbed") + ylab("Flying altitude")
+
+
+```
+
