@@ -1,20 +1,20 @@
-#installer nødvendige pakker
+#installer nÃ¸dvendige pakker
 
-install.packages("ggplot2")
+#install.packages("ggplot2")
 library(ggplot2)
 
-# Prøvedata for responskurve vs. højde
+# PrÃ¸vedata for responskurve vs. hÃ¸jde
 
 H <- c(100,90,80,70,60,50,40,30,20,10,0)
 
-Højde <- c(100,50,60,41,43,43,42,47,51,52,50)
+HÃ¸jde <- c(100,50,60,41,43,43,42,47,51,52,50)
 
-Højde <- sort(Højde, decreasing = TRUE)
-Højde
+HÃ¸jde <- sort(HÃ¸jde, decreasing = TRUE)
+HÃ¸jde
 pr <- c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
 pr
 
-re <- data.frame(Højde,pr)
+re <- data.frame(HÃ¸jde,pr)
 re
 
 str(re)
@@ -22,10 +22,10 @@ str(re)
 # Brug ggplot til at plotte data
 
 p <- ggplot() +
-  ggplot(re, aes(pr,Højde)) + geom_point() +
+  ggplot(re, aes(pr,HÃ¸jde)) + geom_point() +
   geom_smooth(method = "loess", span = 0.3, se = FALSE) + ylim(0, 100)
    
-   ggplot(re, aes(pr,Højde)) + geom_point() +
+   ggplot(re, aes(pr,HÃ¸jde)) + geom_point() +
   geom_smooth(method = "loess", span = 0.3, se = FALSE) + ylim(0, 100)
 
    
@@ -51,7 +51,7 @@ p <- ggplot() +
 
    
    
-# forsøgsopstilling
+# forsÃ¸gsopstilling
 Re <- dist_tab(Fo)
 Re
 

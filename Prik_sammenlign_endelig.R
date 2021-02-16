@@ -1,9 +1,9 @@
-#### Indlæs samlet
+#### IndlÃ¦s samlet
 #Alle_prik_v1 <- read.csv('G:/Vadehavet/GIS_projekts/Projekter_prik/Sammenlign.udprik/Alle_prik_samlet/Alle_prik_samlet/Alle_prik_v1.csv',header = T)
 #Alle_prik_v2 <- read.csv('G:/Vadehavet/GIS_projekts/Projekter_prik/Sammenlign.udprik/Alle_prik_samlet/Alle_prik_samlet/Alle_prik_v2.csv',header = T)
 #View(Alle_prik_v1)
 #View(Alle_prik_v2)
-## sæt sammen til et enkelt dataframe
+## sÃ¦t sammen til et enkelt dataframe
 #Alle_prik_samlet <- rbind(Alle_prik_v1,Alle_prik_v2[,c("id","rep","person","xcoord","ycoord")])
 #str(Alle_prik_samlet)
 #View(Alle_prik_samlet)
@@ -17,11 +17,11 @@
 
 #write.csv(Alle_prik_samlet, file = 'G:/Vadehavet/Alle_prik_csv/Alle_prik_samlet.csv')
 
-# Indsæt renset version
+# IndsÃ¦t renset version
 Alle_prik_samlet <- read.csv('G:/Vadehavet/GIS_projekts/Projekter_prik/Sammenlign.udprik/Alle_prik_samlet/Alle_prik_samlet/Alle_prik_samlet.csv',header = T)
 Alle_prik_samlet
 
-## Subset først efter arter
+## Subset fÃ¸rst efter arter
 gravand <- Alle_prik_samlet[Alle_prik_samlet$id == "gravand", ]
 ryle <- Alle_prik_samlet[Alle_prik_samlet$id == "ryle", ]
 strandskade <- Alle_prik_samlet[Alle_prik_samlet$id == "strandskade", ]
@@ -73,7 +73,7 @@ klyde_mean_rep_4 <- klyde[klyde$rep == 4, ]
 klyde_mean_rep_5 <- klyde[klyde$rep == 5, ]
 
 
-# subset art efter person tæl nrow
+# subset art efter person tÃ¸l nrow
 gravand_johan <- nrow(gravand[gravand$person == 'Johan', ])
 gravand_mads <- nrow(gravand[gravand$person == 'Mads', ])
 gravand_rune <- nrow(gravand[gravand$person == 'Rune', ])
@@ -104,7 +104,7 @@ klyde_mads <- nrow(klyde[klyde$person == 'Mads', ])
 klyde_rune <- nrow(klyde[klyde$person == 'Rune', ])
 klyde_rune
 
-# Find først mean og min/max for alle arter
+# Find fÃ¸rst mean og min/max for alle arter
 mean(c(nrow(klyde_rune),nrow(klyde_johan),nrow(klyde_mads)))
 mean(c(nrow(ryle_rune),nrow(ryle_johan),nrow(ryle_mads)))
 mean(c(nrow(strandskade_rune),nrow(strandskade_johan),nrow(strandskade_mads)))
@@ -326,7 +326,7 @@ write.csv(klyde_rune, file = 'G:/Vadehavet/Alle_prik_csv/klyde_prik_rune.csv')
 write.csv(rbind.data.frame(klyde_johan,klyde_mads,klyde_rune), file = 'G:/Vadehavet/Alle_prik_csv/Alle_prik_klyde.csv')
 
 
-#Indlæs samlet geo med join afstande
+#IndlÃ¦s samlet geo med join afstande
 
 Alle_geo_samlet <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Samlet_geo.csv',header = T)
 Alle_geo_samlet
@@ -365,7 +365,7 @@ median(kobber_geo$distance)
 
 
 
-#### Indlæs alle spatial join resultater
+#### IndlÃ¦s alle spatial join resultater
 Spatial_join_gravand <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_join/Spatial_join_gravand.csv',header = T)
 Spatial_join_strandskade <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_join/Spatial_join_strandskade.csv',header = T)
 Spatial_join_kobber <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_join/Spatial_join_kobber.csv',header = T)
@@ -373,7 +373,7 @@ Spatial_join_ryle <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_j
 Spatial_join_vibe <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_join/Spatial_join_vibe.csv',header = T)
 Spatial_join_klyde <- read.csv('G:/Vadehavet//Alle_prik_csv/Geo_endelig/Spatial_join/Spatial_join_klyde.csv',header = T)
 
-## erstat værdier >3 med 3
+## erstat vÃ¦rdier >3 med 3
 
 mean(Spatial_join_gravand$Join_Count)
 Spatial_join_vibe
@@ -450,7 +450,7 @@ Geo_prik.sam$Precision <- c('Spatial')
 Geo_prik.sam[,1:3] <- 100-Geo_prik.sam[,1:3]
 Geo_prik.sam
 
-### Plot nu samet for både count og spatial
+### Plot nu samet for bÃ¥de count og spatial
 # Combine de to dataframes
 Samlet.boot <- rbind.data.frame(Geo_prik.sam,prik.sam)
 
@@ -467,13 +467,13 @@ Samlet.boot
 addline_format <- function(x,...){
   gsub('\\s','\n',x)
 }
-#Grupper i rigtigt rækkefølge
+#Grupper i rigtigt rÃ¦kkefÃ¸lge
 Samlet.boot$rn <- factor(Samlet.boot$rn, 
                             levels=c("Dunlin","Northern Lapwing","Bar-tailed Godwit",
                                      "Avocet","Oystercatcher",
                                      "Shelduck"))
 
-art_rækkefølge <- c("Dunlin","Northern Lapwing","Bar-tailed Godwit",
+art_rÃ¦kkefÃ¸lge <- c("Dunlin","Northern Lapwing","Bar-tailed Godwit",
                     "Avocet","Oyster- catcher",
                     "Shelduck")
 
@@ -504,7 +504,7 @@ ggplot(Samlet.boot, aes(x=rn, y=mean,
         panel.grid.major = element_blank(),
         panel.grid = element_blank()) +
   scale_y_continuous(limits=c(0,16),breaks=seq(0,16,2)) +
-  scale_x_discrete(labels=addline_format(unique(art_rækkefølge)))
+  scale_x_discrete(labels=addline_format(unique(art_rÃ¦kkefÃ¸lge)))
 
 
 
@@ -532,7 +532,7 @@ ggplot(Samlet.boot, aes(x=rn, y=mean,
 
 
 
-### Forsøg med remove dublicates
+### ForsÃ¸g med remove dublicates
 
 test <- Spatial_join_gravand[!duplicated(t(apply(Spatial_join_gravand[c('field_12','field_1_12')], 1, sort))), ]
 test <- Spatial_join_gravand[!duplicated(t(apply(Spatial_join_gravand[c('TARGET_FID','JOIN_FID')], 1, sort))), ]

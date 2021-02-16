@@ -1,4 +1,4 @@
-#Installer nødvendige pakker
+#Installer nÃ¸dvendige pakker
 # installing/loading the package:
 #if(!require(installr)) {
 #  install.packages("installr"); require(installr)} #load / install+load installr
@@ -40,6 +40,7 @@ require('corrplot')
 library(stringr)
 library("lme4")
 require(digest)
+#install.packages('flextable')
 library(ggcorrplot)
 library(corrplot)
 require(psych)
@@ -72,19 +73,19 @@ library(ggplot2)
 library(flextable)
 library('multcompView')
 
-## Tilføj først arts id til hvert dataframe og cbind dem derefter 
+## TilfÃ¸j fÃ¸rst arts id til hvert dataframe og cbind dem derefter 
 #Gravand
 names_Gravand <- rep("Shelduck",length(Gravand_dat$id))
 latin_Gravand <- rep("Tadorna tadorna",length(Gravand_dat$id))
 Gravand_d <- cbind(Gravand_dat,names_Gravand,latin_Gravand)
 colnames(Gravand_d) <- c("hoejde", "percent","UAS","art","latin")
 Gravand_d
-# Stormmåge
-names_Stormmåge <- rep("Common gull",length(Stormmåge_dat$id))
-latin_Stormmåge <- rep("Larus canus",length(Stormmåge_dat$id))
-Stormmåge_d <- cbind(Stormmåge_dat,names_Stormmåge,latin_Stormmåge)
-colnames(Stormmåge_d) <- c("hoejde", "percent","UAS","art","latin")
-Stormmåge_d
+# StormmÃ¥ge
+names_StormmÃ¥ge <- rep("Common gull",length(StormmÃ¥ge_dat$id))
+latin_StormmÃ¥ge <- rep("Larus canus",length(StormmÃ¥ge_dat$id))
+StormmÃ¥ge_d <- cbind(StormmÃ¥ge_dat,names_StormmÃ¥ge,latin_StormmÃ¥ge)
+colnames(StormmÃ¥ge_d) <- c("hoejde", "percent","UAS","art","latin")
+StormmÃ¥ge_d
 #Storspove
 names_Storspove <- rep("Curlew",length(Storspove_dat$id))
 latin_Storspove <- rep("Numenius arquata",length(Storspove_dat$id))
@@ -122,17 +123,17 @@ names_Islandsk <- rep("Red Knot",length(Islandsk_dat$id))
 latin_Islandsk <- rep("Calidris canutus",length(Islandsk_dat$id))
 Islandsk_d <- cbind(Islandsk_dat,names_Islandsk,latin_Islandsk)
 colnames(Islandsk_d) <- c("hoejde", "percent","UAS","art","latin")
-#Grågås
-names_Grågås <- rep("Greylag Goose",length(Grågås_dat$id))
-latin_Grågås <- rep("Anser anser",length(Grågås_dat$id))
-Grågås_d <- cbind(Grågås_dat,names_Grågås,latin_Grågås)
-colnames(Grågås_d) <- c("hoejde", "percent","UAS","art","latin")
-# Bramgås
-names_Bramgås <- rep("Barnacle Goose",length(Bramgås_dat$id))
-latin_Bramgås <- rep("Branta Leucopsis",length(Bramgås_dat$id))
-Bramgås_d <- cbind(Bramgås_dat,names_Bramgås,latin_Bramgås)
-colnames(Bramgås_d) <- c("hoejde", "percent","UAS","art","latin")
-Bramgås_d
+#GrÃ¥gÃ¥s
+names_GrÃ¥gÃ¥s <- rep("Greylag Goose",length(GrÃ¥gÃ¥s_dat$id))
+latin_GrÃ¥gÃ¥s <- rep("Anser anser",length(GrÃ¥gÃ¥s_dat$id))
+GrÃ¥gÃ¥s_d <- cbind(GrÃ¥gÃ¥s_dat,names_GrÃ¥gÃ¥s,latin_GrÃ¥gÃ¥s)
+colnames(GrÃ¥gÃ¥s_d) <- c("hoejde", "percent","UAS","art","latin")
+# BramgÃ¥s
+names_BramgÃ¥s <- rep("Barnacle Goose",length(BramgÃ¥s_dat$id))
+latin_BramgÃ¥s <- rep("Branta Leucopsis",length(BramgÃ¥s_dat$id))
+BramgÃ¥s_d <- cbind(BramgÃ¥s_dat,names_BramgÃ¥s,latin_BramgÃ¥s)
+colnames(BramgÃ¥s_d) <- c("hoejde", "percent","UAS","art","latin")
+BramgÃ¥s_d
 #Strandskade
 names_Strandskade <- rep("Oystercatcher",length(Strandskade_dat$id))
 latin_Strandskade <- rep("Haematopus ostralegus",length(Strandskade_dat$id))
@@ -149,7 +150,7 @@ Pibeand_d
 
 # Saml til et samlet dataframe
 FH_samlet <- rbind.data.frame(Klyde_d,Vibe_d,Hjejle_d,Kobbersneppe_d,Strandskade_d,
-                              Ryle_d,Islandsk_d,Gravand_d,Pibeand_d,Stormmåge_d,Grågås_d,Bramgås_d)
+                              Ryle_d,Islandsk_d,Gravand_d,Pibeand_d,StormmÃ¥ge_d,GrÃ¥gÃ¥s_d,BramgÃ¥s_d)
 
 # Hvis det skal laves om the procent (%)
 #FH_samlet[, c(2)] <- FH_samlet[, c(2)]*100
@@ -157,7 +158,7 @@ FH_samlet <- rbind.data.frame(Klyde_d,Vibe_d,Hjejle_d,Kobbersneppe_d,Strandskade
 # Skriv csv fil med samlet data
 write.csv(FH_samlet, file = "G:/Vadehavet/Frames_geo/FH_samlet.csv")
 
-# Find lavesete flyvehøjde for hver UAS
+# Find lavesete flyvehÃ¸jde for hver UAS
 sub_phan <- subset(new_FH_samlet, subset=!(UAS=='Mavic'))
 sub_mavic <- subset(new_FH_samlet, subset=!(UAS=='Phantom'))
 sub_phan
@@ -178,23 +179,23 @@ addline_format <- function(x,...){
   gsub('\\(','\n',x)
 }  
 
-#Grupper i rigtigt rækkefølge efter speceis group
+#Grupper i rigtigt rÃ¦kkefÃ¸lge efter speceis group
 FH_samlet$art <- factor(FH_samlet$art, 
                          levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
                                   "Avocet","Bar-tailed Godwit","Oystercatcher","Wigeon",
                                   "Shelduck","Barnacle Goose","Greylag Goose","Common Gull"))
 
-#art_rækkefølge <- c("Dunlin (Small Wader)","Red Knot (Small Wader)","Northern Lapwing (Medium Wader)",
+#art_rÃ¦kkefÃ¸lge <- c("Dunlin (Small Wader)","Red Knot (Small Wader)","Northern Lapwing (Medium Wader)",
 #                    "Golden Plover (Medium Wader)","Avocet (Large Wader)","Bar-tailed Godwit (Large Wader)",
 #                    "Oystercatcher (Large Wader)","Wigeon (Duck)","Shelduck (Large Wader)",
 #                    "Barnacle Goose (Goose)","Greylag Goose (Goose)","Common Gull (Gull)")
 
-art_rækkefølge <- factor(levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover","Avocet",
+art_rÃ¦kkefÃ¸lge <- factor(levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover","Avocet",
                     "Bar-tailed Godwit","Oyster- catcher","Wigeon","Shelduck",
                     "Barnacle Goose","Greylag Goose","Common Gull"))
 
 #View(FH_samlet)
-art_rækkefølge
+art_rÃ¦kkefÃ¸lge
 p_Alle <- ggplot(data = FH_samlet, aes(x = percent, y = hoejde, group = UAS,
                                             color = UAS)) + 
   facet_wrap(~art, labeller = labeller(art = label_wrap_gen(40)))
@@ -269,8 +270,8 @@ p_Alle + geom_point(alpha=0.5) +
                                                                       "red4","navy","red4","navy"))
 
 
-## Visualisering af forskelle imellem flugtafstande for undersøgte arter **Begge droner**
-# først remove o procent rækkerne fra FH_samlet
+## Visualisering af forskelle imellem flugtafstande for undersÃ¸gte arter **Begge droner**
+# fÃ¸rst remove o procent rÃ¦kkerne fra FH_samlet
 r <- with(FH_samlet, which(hoejde==100, arr.ind=TRUE))
 new_FH_samlet <- FH_samlet[-r, ]
 write.csv(new_FH_samlet, file = "G:/Vadehavet/Frames_geo/new_FH_samlet.csv")
@@ -294,8 +295,8 @@ mtext("Waterbird species", side=1, cex=1.5, line=1.5, outer=TRUE)
 mtext("Height", side=2, cex=1.5, line=1.5, outer=TRUE)
 mtext("Minimum altitude before disturbance", side=3, cex=1.5, line=0.5, outer=TRUE)
 
-## Visualisering af forskelle imellem flugtafstande for undersøgte arter **dronemodeller hver for sig**
-# først remove MAVIC rækkerne fra new_FH_samlet
+## Visualisering af forskelle imellem flugtafstande for undersÃ¸gte arter **dronemodeller hver for sig**
+# fÃ¸rst remove MAVIC rÃ¦kkerne fra new_FH_samlet
 r_phantom <- with(new_FH_samlet, which(UAS=='Mavic', arr.ind=TRUE))
 phantom_FH_samlet <- new_FH_samlet[-r_phantom, ]
 head(phantom_FH_samlet)
@@ -311,10 +312,10 @@ labels_art <- c('Avocet','Northern Lapwing','Golden Plover','Bar-tailed Godwit',
 
 boxplot(phantom_FH_samlet$hoejde ~ phantom_FH_samlet$art, xaxt='na',ylim=c(0,100))
 axis(side=1, 1:length(labels_art), labels=FALSE)
-# Tilføj text med drone id
+# TilfÃ¸j text med drone id
 text(0.7, 112, "Phantom", xpd=NA)
 
-# først remove PHANTOM rækkerne fra new_FH_samlet
+# fÃ¸rst remove PHANTOM rÃ¦kkerne fra new_FH_samlet
 r_mavic <- with(new_FH_samlet, which(UAS=='Phantom', arr.ind=TRUE))
 mavic_FH_samlet <- new_FH_samlet[-r_mavic, ]
 head(mavic_FH_samlet)
@@ -327,7 +328,7 @@ text(1:length(labels_art), par("usr")[3] - 10.0, labels=labels_art, srt=-65,
 mtext("Waterbird species", side=1, cex=1.3, line=5.8, outer=TRUE)   
 mtext("Height", side=2, cex=1.5, line=1.3, outer=TRUE)
 mtext("Minimum altitude before disturbance", side=3, cex=1.3, line=0.3, outer=TRUE)
-# Tilføj text med drone id
+# TilfÃ¸j text med drone id
 text(0.5, 112, "Mavic", xpd=NA)
 
 
@@ -346,7 +347,7 @@ p_UAS <- ggboxplot(new_FH_samlet, x = "UAS", y = "hoejde",
                color = "UAS", palette = c("red4", "navyblue"),
                add = "jitter",size = 1, bxp.errorbar = T,bxp.errorbar.width = 0.1,
                notch=T)
-# Tilføj signifikansniveauer  
+# TilfÃ¸j signifikansniveauer  
 p_UAS + geom_signif(comparisons = list(c("Phantom", "Mavic")), size = 0.8,
             map_signif_level=TRUE,test = "wilcox.test",y_position = 105) +
 
@@ -358,6 +359,27 @@ p_UAS + geom_signif(comparisons = list(c("Phantom", "Mavic")), size = 0.8,
         axis.title=element_text(size=14,face=1),
         strip.text = element_text(face=2, size=9.5),legend.text = element_text(size = 15),
         legend.title = element_text(size = 13),legend.position = "top") +
+  scale_y_continuous(limits=c(0,105),breaks=seq(0,100,10))
+
+######*** Vendt om til horizontal####
+## Med ggplot **DE TO UAS MODELLER
+p_UAS <- ggboxplot(new_FH_samlet, x = "UAS", y = "hoejde",
+                   color = "UAS", palette = c("red4", "navyblue"),
+                   add = "jitter",size = 1, bxp.errorbar = T,bxp.errorbar.width = 0.1,
+                   notch=T,orientation = "horizontal")
+p_UAS
+# TilfÃ¸j signifikansniveauer  
+p_UAS + geom_signif(comparisons = list(c("Phantom", "Mavic")), size = 0.8,
+                    map_signif_level=TRUE,test = "wilcox.test",y_position = 105) +
+  
+  xlab(NULL) + ylab("Flying altitude (m)") +
+  rotate_x_text(angle = 0, hjust = c(.5,.5), vjust = c(1.,1.), size=15) +
+  scale_x_discrete(breaks=unique(new_FH_samlet$UAS),
+                   labels=unique(new_FH_samlet$UAS)) +
+  theme(plot.margin = margin(0.1, 1, 0.1, 0.1, "cm"),axis.text=element_text(size=13),
+        axis.title=element_text(size=14,face=1),
+        strip.text = element_text(face=2, size=9.5),legend.text = element_text(size = 15),
+        legend.title = element_text(size = 18),legend.position = "top") +
   scale_y_continuous(limits=c(0,105),breaks=seq(0,100,10))
 
 
@@ -428,7 +450,7 @@ name <- c(bquote(atop(NA,atop("Avocet                        ",italic(.("Recurvi
 
 # Udskift Oystercather med Oyster- catcher
 new_FH_samlet$art <- gsub('Oystercatcher', 'Oyster- catcher', new_FH_samlet$art)
-#Grupper i rigtigt rækkefølge efter speceis group
+#Grupper i rigtigt rÃ¦kkefÃ¸lge efter species group
 new_FH_samlet$art <- factor(new_FH_samlet$art, 
                         levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
                                  "Avocet","Bar-tailed Godwit","Oyster- catcher","Wigeon",
@@ -457,6 +479,31 @@ d = 3*cxy[1]
 ypos = par("usr")[3] - 2.75*cxy[2]
 segments(c(1,5)-d,c(ypos,ypos),c(3,7)+d,c(ypos,ypos),xpd=NA,lwd=2,col="red")
 
+######*** Artikel - Ret y-akse meter intervaller
+#Grupper i rigtigt rÃ¦kkefÃ¸lge efter species group
+new_FH_samlet$art <- factor(new_FH_samlet$art, 
+                            levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
+                                     "Avocet","Bar-tailed Godwit","Oyster- catcher","Wigeon",
+                                     "Shelduck","Barnacle Goose","Greylag Goose","Common Gull"))
+
+p <- ggboxplot(new_FH_samlet, x = "art", y = "hoejde",
+               color = "UAS", palette = c("red4", "navyblue"),
+               add = "jitter")
+
+p + stat_compare_means(aes(group = UAS), label = "p.signif",method ="wilcox.test",label.y =100,
+                       size=4.5) +
+  #  stat_boxplot(aes(group = interaction(UAS, art)),geom ='errorbar', width = 0.2, size=0.25, color="black") +
+  #  stat_compare_means(method = 'kruskal.test', label.y = 100)+ 
+  xlab(NULL) + ylab("Flying altitude (m)") +
+  rotate_x_text(angle = -50, hjust = c(0,0), vjust = c(1.,1.), size=12) +
+  scale_x_discrete(breaks=unique(new_FH_samlet$art),
+                   labels=addline_format(unique(new_FH_samlet$art))) +
+  scale_y_continuous(breaks = seq(0, 100, by=10), limits=c(0,100))+
+  theme(plot.margin = margin(0.1, 1, 0.1, 0.1, "cm"),axis.text=element_text(size=9),
+        axis.title=element_text(size=14,face=1),
+        strip.text = element_text(face=2, size=9.5),legend.text = element_text(size = 12),
+        legend.title = element_text(size = 13),legend.position = "top")
+
 # Og tilbage igen Oystercather med Oyster- catcher
 new_FH_samlet$art <- gsub('Oyster- catcher', 'Oystercatcher', new_FH_samlet$art)
 new_FH_samlet$art
@@ -478,7 +525,7 @@ new_FH_samlet$pair <- interaction(new_FH_samlet$art,new_FH_samlet$UAS)
 
 library(forcats)
 
-## Lav rigtig grupperet rækkefølge
+## Lav rigtig grupperet rÃ¦kkefÃ¸lge
 new_FH_samlet$art <- factor(new_FH_samlet$art, 
                             levels=rev(c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
                                          "Avocet","Bar-tailed Godwit","Oystercatcher","Wigeon",
@@ -490,7 +537,7 @@ sub_phan <- subset(new_FH_samlet, subset=!(UAS=='Mavic'))
 sub_mavic <- subset(new_FH_samlet, subset=!(UAS=='Phantom'))
 #View(subset(new_FH_samlet, subset=!(UAS=='Phantom')))
 
-## Lav rigtig grupperet rækkefølge
+## Lav rigtig grupperet rÃ¦kkefÃ¸lge
 new_FH_samlet$art <- factor(new_FH_samlet$art, 
                             levels=rev(c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
                                          "Avocet","Bar-tailed Godwit","Oystercatcher","Wigeon",
@@ -550,7 +597,7 @@ plt_combi + labs(title="Independent Wilcoxon comparisons for both UAS") +
   rotate_x_text(angle = -50, hjust = c(0,0), vjust = c(1.,1.), size=8.5) +
   rotate_y_text(angle = 0, hjust = c(0,0), vjust = c(0.,0.), size=8.5)
 
-# Ændre til signi.niveauer
+# Ã¦ndre til signi.niveauer
 
 wil_combi_sig <- wil_combi
 wil_combi_sig[wil_combi_sig < 0.001] <- '***'
@@ -668,12 +715,12 @@ x
 new_FH_samlet$art
 
 ################## For nr/altal pr overflyvning
-# Sørg først for ens navne/headers for alle dataframes
+# SÃ¸rg fÃ¸rst for ens navne/headers for alle dataframes
 Gravand_nr_dat
 Gravand_nr_dat$navn <- c('Shelduck')
 colnames(Gravand_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
-Stormmåge_nr_dat$navn <- c('Common Gull')
-colnames(Stormmåge_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
+StormmÃ¥ge_nr_dat$navn <- c('Common Gull')
+colnames(StormmÃ¥ge_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
 Storspove_nr_dat
 Storspove_nr_dat$navn <- c('Curlew')
 colnames(Storspove_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
@@ -695,12 +742,12 @@ colnames(Klyde_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art",
 Islandsk_nr_dat
 Islandsk_nr_dat$navn <- c('Red Knot')
 colnames(Islandsk_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
-Grågås_nr_dat
-Grågås_nr_dat$navn <- c('Greylag Goose')
-colnames(Grågås_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
-Bramgås_nr_dat
-Bramgås_nr_dat$navn <- c('Barnacle Goose')
-colnames(Bramgås_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
+GrÃ¥gÃ¥s_nr_dat
+GrÃ¥gÃ¥s_nr_dat$navn <- c('Greylag Goose')
+colnames(GrÃ¥gÃ¥s_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
+BramgÃ¥s_nr_dat
+BramgÃ¥s_nr_dat$navn <- c('Barnacle Goose')
+colnames(BramgÃ¥s_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
 Strandskade_nr_dat
 Strandskade_nr_dat$navn <- c('Oystercatcher')
 colnames(Strandskade_nr_dat) <- c("flight_nr", "height","nr_birds","UAS","date","art","navn")
@@ -711,17 +758,17 @@ Pibeand_nr_dat
 # Saml til et samlet dataframe
 FH_samlet_nr <- rbind.data.frame(Klyde_nr_dat,Vibe_nr_dat,Hjejle_nr_dat,Kobbersneppe_nr_dat,
                                  Strandskade_nr_dat,Ryle_nr_dat,Islandsk_nr_dat,Gravand_nr_dat,
-                                 Pibeand_nr_dat,Stormmåge_nr_dat,Grågås_nr_dat,Bramgås_nr_dat)
+                                 Pibeand_nr_dat,StormmÃ¥ge_nr_dat,GrÃ¥gÃ¥s_nr_dat,BramgÃ¥s_nr_dat)
 FH_samlet_nr
 
 # Skriv csv fil med samlet data (nr/antal)
 write.csv(FH_samlet_nr, file = "G:/Vadehavet/Frames_geo/FH_samlet_nr.csv")
 
-# Byt om på rækkeføljen af UAS
+# Byt om pÃ¥ rÃ¦kkefÃ¸ljen af UAS
 FH_samlet_nr$UAS <- factor(FH_samlet_nr$UAS, levels = rev(levels(FH_samlet_nr$UAS)))
 FH_samlet_nr
 
-#Grupper i rigtigt rækkefølge efter speceis group
+#Grupper i rigtigt rÃ¦kkefÃ¸lge efter speceis group
 FH_samlet_nr$navn <- factor(FH_samlet_nr$navn, 
                         levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
                                  "Avocet","Bar-tailed Godwit","Oystercatcher","Wigeon",
@@ -764,7 +811,7 @@ p_Alle_nr + geom_point() +
 #stat_compare_means(label = "p.signif")
 
 ###################################################################
-# Lav samlet plot over nr/antal individer pr overflyvning (Bytte om på akser)
+# Lav samlet plot over nr/antal individer pr overflyvning (Bytte om pÃ¥ akser)
 FH_samlet_nr$height <- as.numeric(as.character(FH_samlet_nr$height))
 FH_samlet_nr$nr_birds <- as.numeric(as.character(FH_samlet_nr$nr_birds))
 
@@ -816,22 +863,22 @@ tom_hoejde
 
 
 
-######**************** Residualplot på den linære model********************
+######**************** Residualplot pÃ¥ den linÃ¦re model********************
 
 #### Obtain predicted and residual values
-# Først subset til UAS model
+# FÃ¸rst subset til UAS model
 phan_nr <- subset(FH_samlet_nr, subset=!(UAS=='Mavic'))
 mavic_nr <- subset(FH_samlet_nr, subset=!(UAS=='Phantom'))
-# Lav så lm særskilt
+# Lav sÃ¥ lm sÃ¦rskilt
 phan_fit <- lmList(height~nr_birds|navn,phan_nr)
 mavic_fit <- lmList(height~nr_birds|navn,mavic_nr)
 phan_fit
-# Indsæt fittede værdier
+# IndsÃ¦t fittede vÃ¦rdier
 phan_nr$predicted <- predict(phan_fit)
 phan_nr$residuals <- residuals(phan_fit)
 mavic_nr$predicted <- predict(mavic_fit)
 mavic_nr$residuals <- residuals(mavic_fit)
-# saml til ét dataframe igen
+# saml til et dataframe igen
 fit_samlet <- rbind(phan_nr,mavic_nr)
 fit_samlet$navn <- factor(fit_samlet$navn, 
                           levels=c("Dunlin","Red Knot","Northern Lapwing","Golden Plover",
@@ -882,7 +929,7 @@ p_residual + geom_smooth(method = "lm", se = FALSE,  fullrange = TRUE,
                                                                              "navy","red4","navy","red4"))
 
 
-################# *************Lav plot med predicted / obs værdier ***********###########
+################# *************Lav plot med predicted / obs vÃ¦rdier ***********###########
 fit_samlet$x_indeks <- fit_samlet$predicted/fit_samlet$height
 
 fit_samlet
@@ -924,20 +971,20 @@ gravand_mavic <- gravand[gravand$UAS %in% 'Mavic',]
 pibeand <- opdelt$`Wigeon`
 pibeand_phan <- pibeand[pibeand$UAS %in% 'Phantom',]
 pibeand_mavic <- pibeand[pibeand$UAS %in% 'Mavic',]
-stormmåge <- opdelt$`Common Gull`
-stormmåge_phan <- stormmåge[stormmåge$UAS %in% 'Phantom',]
-stormmåge_mavic <- stormmåge[stormmåge$UAS %in% 'Mavic',]
-grågås <- opdelt$`Greylag Goose`
-grågås_phan <- grågås[grågås$UAS %in% 'Phantom',]
-grågås_mavic <- grågås[grågås$UAS %in% 'Mavic',]
-bramgås <- opdelt$`Barnacle Goose`
-bramgås_phan <- bramgås[bramgås$UAS %in% 'Phantom',]
-bramgås_mavic <- bramgås[bramgås$UAS %in% 'Mavic',]
+stormmÃ¥ge <- opdelt$`Common Gull`
+stormmÃ¥ge_phan <- stormmÃ¥ge[stormmÃ¥ge$UAS %in% 'Phantom',]
+stormmÃ¥ge_mavic <- stormmÃ¥ge[stormmÃ¥ge$UAS %in% 'Mavic',]
+grÃ¥gÃ¥s <- opdelt$`Greylag Goose`
+grÃ¥gÃ¥s_phan <- grÃ¥gÃ¥s[grÃ¥gÃ¥s$UAS %in% 'Phantom',]
+grÃ¥gÃ¥s_mavic <- grÃ¥gÃ¥s[grÃ¥gÃ¥s$UAS %in% 'Mavic',]
+bramgÃ¥s <- opdelt$`Barnacle Goose`
+bramgÃ¥s_phan <- bramgÃ¥s[bramgÃ¥s$UAS %in% 'Phantom',]
+bramgÃ¥s_mavic <- bramgÃ¥s[bramgÃ¥s$UAS %in% 'Mavic',]
 vibe
 pred_obs <- cbind(mean(klyde$x_indeks),mean(vibe$x_indeks),mean(hjejle$x_indeks),
                  mean(kobbersneppe$x_indeks),mean(strandskade$x_indeks),mean(ryle$x_indeks),
                  mean(islandsk$x_indeks),mean(gravand$x_indeks),mean(pibeand$x_indeks),
-                 mean(stormmåge$x_indeks),mean(grågås$x_indeks),mean(bramgås$x_indeks))
+                 mean(stormmÃ¥ge$x_indeks),mean(grÃ¥gÃ¥s$x_indeks),mean(bramgÃ¥s$x_indeks))
 colnames(pred_obs) <- unique(fit_samlet$navn)
 pred_obs
 str(hjejle$x_indeks)
@@ -947,14 +994,14 @@ pred_obs_phan <- cbind(mean(klyde_phan$x_indeks),mean(vibe_phan$x_indeks),
                        mean(hjejle_phan$x_indeks),mean(kobbersneppe_phan$x_indeks),
                        mean(strandskade_phan$x_indeks),mean(ryle_phan$x_indeks),
                        mean(islandsk_phan$x_indeks),mean(gravand_phan$x_indeks),
-                       mean(pibeand_phan$x_indeks),mean(stormmåge_phan$x_indeks),
-                       mean(grågås_phan$x_indeks),mean(bramgås_phan$x_indeks))
+                       mean(pibeand_phan$x_indeks),mean(stormmÃ¥ge_phan$x_indeks),
+                       mean(grÃ¥gÃ¥s_phan$x_indeks),mean(bramgÃ¥s_phan$x_indeks))
 pred_obs_mavic <- cbind(mean(klyde_mavic$x_indeks),mean(vibe_mavic$x_indeks),
                         mean(hjejle_mavic$x_indeks),mean(kobbersneppe_mavic$x_indeks),
                         mean(strandskade_mavic$x_indeks),mean(ryle_mavic$x_indeks),
                         mean(islandsk_mavic$x_indeks),mean(gravand_mavic$x_indeks),
-                        mean(pibeand_mavic$x_indeks),mean(stormmåge_mavic$x_indeks),
-                        mean(grågås_mavic$x_indeks),mean(bramgås_mavic$x_indeks))
+                        mean(pibeand_mavic$x_indeks),mean(stormmÃ¥ge_mavic$x_indeks),
+                        mean(grÃ¥gÃ¥s_mavic$x_indeks),mean(bramgÃ¥s_mavic$x_indeks))
 
 pred_obs_mavic
 # Lav bootstrap confidens intervaller
@@ -985,22 +1032,22 @@ boot.gravand <- boot(gravand[, "x_indeks", drop = FALSE], statistic=meanfun, R=1
 CI.gravand <-  boot.ci(boot.gravand, conf=0.95, type="bca")
 boot.pibeand <- boot(pibeand[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
 CI.pibeand <-  boot.ci(boot.pibeand, conf=0.95, type="bca")
-boot.stormmåge <- boot(stormmåge[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.stormmåge <-  boot.ci(boot.stormmåge, conf=0.95, type="bca")
-boot.grågås <- boot(grågås[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.grågås <-  boot.ci(boot.grågås, conf=0.95, type="bca")
-boot.bramgås <- boot(bramgås[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.bramgås <-  boot.ci(boot.bramgås, conf=0.95, type="bca")
+boot.stormmÃ¥ge <- boot(stormmÃ¥ge[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.stormmÃ¥ge <-  boot.ci(boot.stormmÃ¥ge, conf=0.95, type="bca")
+boot.grÃ¥gÃ¥s <- boot(grÃ¥gÃ¥s[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.grÃ¥gÃ¥s <-  boot.ci(boot.grÃ¥gÃ¥s, conf=0.95, type="bca")
+boot.bramgÃ¥s <- boot(bramgÃ¥s[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.bramgÃ¥s <-  boot.ci(boot.bramgÃ¥s, conf=0.95, type="bca")
 
 lowerbound <- cbind(CI.klyde$bca[4],CI.vibe$bca[4],CI.hjejle$bca[4],CI.kobbersneppe$bca[4],
                     CI.strandskade$bca[4],CI.ryle$bca[4],CI.islandsk$bca[4],CI.gravand$bca[4],
-                    CI.pibeand$bca[4],CI.stormmåge$bca[4],CI.grågås$bca[4],CI.bramgås$bca[4])
+                    CI.pibeand$bca[4],CI.stormmÃ¥ge$bca[4],CI.grÃ¥gÃ¥s$bca[4],CI.bramgÃ¥s$bca[4])
 upperbound <- cbind(CI.klyde$bca[5],CI.vibe$bca[5],CI.hjejle$bca[5],CI.kobbersneppe$bca[5],CI.strandskade$bca[5],
                     CI.ryle$bca[5],CI.islandsk$bca[5],CI.gravand$bca[5],CI.pibeand$bca[5],
-                    CI.stormmåge$bca[5],CI.grågås$bca[5],CI.bramgås$bca[5])
+                    CI.stormmÃ¥ge$bca[5],CI.grÃ¥gÃ¥s$bca[5],CI.bramgÃ¥s$bca[5])
 boot.mean <- cbind(CI.klyde$t0,CI.vibe$t0,CI.hjejle$t0,CI.kobbersneppe$t0,CI.strandskade$t0,
                     CI.ryle$t0,CI.islandsk$t0,CI.gravand$t0,CI.pibeand$t0,
-                    CI.stormmåge$t0,CI.grågås$t0,CI.bramgås$t0)
+                    CI.stormmÃ¥ge$t0,CI.grÃ¥gÃ¥s$t0,CI.bramgÃ¥s$t0)
 
 colnames(boot.mean) <- c(levels(fit_samlet$navn))
 
@@ -1024,24 +1071,24 @@ boot.gravand_phan <- boot(gravand_phan[, "x_indeks", drop = FALSE], statistic=me
 CI.gravand_phan<-  boot.ci(boot.gravand_phan, conf=0.95, type="bca")
 boot.pibeand_phan <- boot(pibeand_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
 CI.pibeand_phan <-  boot.ci(boot.pibeand_phan, conf=0.95, type="bca")
-boot.stormmåge_phan <- boot(stormmåge_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.stormmåge_phan <-  boot.ci(boot.stormmåge_phan, conf=0.95, type="bca")
-boot.grågås_phan <- boot(grågås_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.grågås_phan <-  boot.ci(boot.grågås_phan, conf=0.95, type="bca")
-boot.bramgås_phan <- boot(bramgås_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.bramgås_phan <-  boot.ci(boot.bramgås_phan, conf=0.95, type="bca")
+boot.stormmÃ¥ge_phan <- boot(stormmÃ¥ge_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.stormmÃ¥ge_phan <-  boot.ci(boot.stormmÃ¥ge_phan, conf=0.95, type="bca")
+boot.grÃ¥gÃ¥s_phan <- boot(grÃ¥gÃ¥s_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.grÃ¥gÃ¥s_phan <-  boot.ci(boot.grÃ¥gÃ¥s_phan, conf=0.95, type="bca")
+boot.bramgÃ¥s_phan <- boot(bramgÃ¥s_phan[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.bramgÃ¥s_phan <-  boot.ci(boot.bramgÃ¥s_phan, conf=0.95, type="bca")
 
 lowerbound_phan <- cbind(CI.klyde_phan$bca[4],CI.vibe_phan$bca[4],CI.hjejle_phan$bca[4],
                     CI.kobbersneppe_phan$bca[4],CI.strandskade_phan$bca[4],CI.ryle_phan$bca[4],
                     CI.islandsk_phan$bca[4],CI.gravand_phan$bca[4],CI.pibeand_phan$bca[4],
-                    CI.stormmåge_phan$bca[4],CI.grågås_phan$bca[4],CI.bramgås_phan$bca[4])
+                    CI.stormmÃ¥ge_phan$bca[4],CI.grÃ¥gÃ¥s_phan$bca[4],CI.bramgÃ¥s_phan$bca[4])
 upperbound_phan <- cbind(CI.klyde_phan$bca[5],CI.vibe_phan$bca[5],CI.hjejle_phan$bca[5],
                     CI.kobbersneppe_phan$bca[5],CI.strandskade_phan$bca[5],CI.ryle_phan$bca[5],
                     CI.islandsk_phan$bca[5],CI.gravand_phan$bca[5],CI.pibeand_phan$bca[5],
-                    CI.stormmåge_phan$bca[5],CI.grågås_phan$bca[5],CI.bramgås_phan$bca[5])
+                    CI.stormmÃ¥ge_phan$bca[5],CI.grÃ¥gÃ¥s_phan$bca[5],CI.bramgÃ¥s_phan$bca[5])
 boot.mean_phan <- cbind(CI.klyde_phan$t0,CI.vibe_phan$t0,CI.hjejle_phan$t0,CI.kobbersneppe_phan$t0,
                    CI.strandskade_phan$t0,CI.ryle_phan$t0,CI.islandsk_phan$t0,CI.gravand_phan$t0,
-                   CI.pibeand_phan$t0,CI.stormmåge_phan$t0,CI.grågås_phan$t0,CI.bramgås_phan$t0)
+                   CI.pibeand_phan$t0,CI.stormmÃ¥ge_phan$t0,CI.grÃ¥gÃ¥s_phan$t0,CI.bramgÃ¥s_phan$t0)
 
 boot.mean_phan <- data.frame(t(boot.mean_phan))
 boot.mean_phan <- cbind(levels(fit_samlet$navn),boot.mean_phan,'Phantom')
@@ -1067,24 +1114,24 @@ boot.gravand_mavic <- boot(gravand_mavic[, "x_indeks", drop = FALSE], statistic=
 CI.gravand_mavic<-  boot.ci(boot.gravand_mavic, conf=0.95, type="bca")
 boot.pibeand_mavic <- boot(pibeand_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
 CI.pibeand_mavic <-  boot.ci(boot.pibeand_mavic, conf=0.95, type="bca")
-boot.stormmåge_mavic <- boot(stormmåge_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.stormmåge_mavic <-  boot.ci(boot.stormmåge_mavic, conf=0.95, type="bca")
-boot.grågås_mavic <- boot(grågås_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.grågås_mavic <-  boot.ci(boot.grågås_mavic, conf=0.95, type="bca")
-boot.bramgås_mavic <- boot(bramgås_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
-CI.bramgås_mavic <-  boot.ci(boot.bramgås_mavic, conf=0.95, type="bca")
+boot.stormmÃ¥ge_mavic <- boot(stormmÃ¥ge_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.stormmÃ¥ge_mavic <-  boot.ci(boot.stormmÃ¥ge_mavic, conf=0.95, type="bca")
+boot.grÃ¥gÃ¥s_mavic <- boot(grÃ¥gÃ¥s_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.grÃ¥gÃ¥s_mavic <-  boot.ci(boot.grÃ¥gÃ¥s_mavic, conf=0.95, type="bca")
+boot.bramgÃ¥s_mavic <- boot(bramgÃ¥s_mavic[, "x_indeks", drop = FALSE], statistic=meanfun, R=10000)
+CI.bramgÃ¥s_mavic <-  boot.ci(boot.bramgÃ¥s_mavic, conf=0.95, type="bca")
 
 lowerbound_mavic <- cbind(CI.klyde_mavic$bca[4],CI.vibe_mavic$bca[4],CI.hjejle_mavic$bca[4],
                     CI.kobbersneppe_mavic$bca[4],CI.strandskade_mavic$bca[4],CI.ryle_mavic$bca[4],
                     CI.islandsk_mavic$bca[4],CI.gravand_mavic$bca[4],CI.pibeand_mavic$bca[4],
-                    CI.stormmåge_mavic$bca[4],CI.grågås_mavic$bca[4],CI.bramgås_mavic$bca[4])
+                    CI.stormmÃ¥ge_mavic$bca[4],CI.grÃ¥gÃ¥s_mavic$bca[4],CI.bramgÃ¥s_mavic$bca[4])
 upperbound_mavic <- cbind(CI.klyde_mavic$bca[5],CI.vibe_mavic$bca[5],CI.hjejle_mavic$bca[5],
                     CI.kobbersneppe_mavic$bca[5],CI.strandskade_mavic$bca[5],CI.ryle_mavic$bca[5],
                     CI.islandsk_mavic$bca[5],CI.gravand_mavic$bca[5],CI.pibeand_mavic$bca[5],
-                    CI.stormmåge_mavic$bca[5],CI.grågås_mavic$bca[5],CI.bramgås_mavic$bca[5])
+                    CI.stormmÃ¥ge_mavic$bca[5],CI.grÃ¥gÃ¥s_mavic$bca[5],CI.bramgÃ¥s_mavic$bca[5])
 boot.mean_mavic <- cbind(CI.klyde_mavic$t0,CI.vibe_mavic$t0,CI.hjejle_mavic$t0,CI.kobbersneppe_mavic$t0,
                    CI.strandskade_mavic$t0,CI.ryle_mavic$t0,CI.islandsk_mavic$t0,CI.gravand_mavic$t0,
-                   CI.pibeand_mavic$t0,CI.stormmåge_mavic$t0,CI.grågås_mavic$t0,CI.bramgås_mavic$t0)
+                   CI.pibeand_mavic$t0,CI.stormmÃ¥ge_mavic$t0,CI.grÃ¥gÃ¥s_mavic$t0,CI.bramgÃ¥s_mavic$t0)
 
 boot.mean_mavic <- data.frame(t(boot.mean_mavic))
 boot.mean_mavic <- cbind(levels(fit_samlet$navn),boot.mean_mavic,'Mavic')
@@ -1098,7 +1145,7 @@ all_boot.UASs <- cbind(boot.mean_UASs,upperbound_UASs,lowerbound_UASs)
 all_boot.UASs
 
 #############**** Lav plot
-# sæt størrelse på marginer
+# sÃ¦t stÃ¸rrelse pÃ¥ marginer
 par(mfrow=c(1,1))
 par(oma=c(.5,3.2,2.5,1))
 par(mar=c(8.5,1.2,1,2))

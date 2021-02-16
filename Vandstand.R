@@ -1,20 +1,21 @@
+library(dplyr)
 Vandstand_ballum <- read.csv('G:/Vadehavet/Vandstand/Ballum__flyder__6601.csv',header = T)
 
 head(Vandstand_ballum)
 str(Vandstand_ballum)
 
 Vandstand_ballum[grep("2019-08-20", Vandstand_ballum$Datotid), ]
-Vandstand_brøns <- read.csv('G:/Vadehavet/Vandstand/Brøns__flyder__6901.csv',header = T)
-Vandstand_brøns[grep("2019-08-20", Vandstand_brøns$Datotid), ]
+Vandstand_brÃ¸ns <- read.csv('G:/Vadehavet/Vandstand/BrÃ¸ns__flyder__6901.csv',header = T)
+Vandstand_brÃ¸ns[grep("2019-08-20", Vandstand_brÃ¸ns$Datotid), ]
 Vandstand_ribe <- read.csv('G:/Vadehavet/Vandstand/Ribe__flyder__6701.csv',header = T)
 Vandstand_ribe[grep("2019-08-20", Vandstand_ribe$Datotid), ]
 
+View(Vandstand_brÃ¸ns)
 
 
 
-
-################################ Prøv at sammenholde / korrelere vand og flushing
-# Indlæs intial flights med flight nr
+################################ PrÃ¸v at sammenholde / korrelere vand og flushing
+# IndlÃ¦s initial flights med flight nr
 initial.flight <- read.csv('G:/Vadehavet/Frames_geo/Initial_species_count_dato.tidevand.csv',
                            header = T,)
 initial.flight <- initial.flight[grep("Respons", initial.flight$X), ]
@@ -23,38 +24,30 @@ initial.flight <- data.frame(initial.flight)
 initial.flight <- droplevels(initial.flight)
 colnames(initial.flight) <- as.character(unlist(initial.flight[1,])) # the first row will be the header
 initial.flight <- initial.flight[-1, ]     
+#View(initial.flight)
+str(initial.flight)
 
-levels(initial.flight$Respons_1)[levels(initial.flight$Respons_1) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_2)[levels(initial.flight$Respons_2) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_3)[levels(initial.flight$Respons_3) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_4)[levels(initial.flight$Respons_4) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_5)[levels(initial.flight$Respons_5) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_6)[levels(initial.flight$Respons_6) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_7)[levels(initial.flight$Respons_7) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_8)[levels(initial.flight$Respons_8) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_9)[levels(initial.flight$Respons_9) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_10)[levels(initial.flight$Respons_10) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_11)[levels(initial.flight$Respons_11) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_12)[levels(initial.flight$Respons_12) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_13)[levels(initial.flight$Respons_13) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_14)[levels(initial.flight$Respons_14) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_15)[levels(initial.flight$Respons_15) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_16)[levels(initial.flight$Respons_16) %in% c("A", "B","C")] <- c(0, 50, 100)
-levels(initial.flight$Respons_17)[levels(initial.flight$Respons_17) %in% c("A", "B","C")] <- c(0, 50, 100)
-initial.flight[initial.flight==""]<-NA
-initial.flight[initial.flight=="<NA>"]=NA
+# Byt alle A,B,C ud med 1,2,3
+initial.flight[initial.flight == "A" ] <- 0
+initial.flight[initial.flight == "B" ] <- 50
+initial.flight[initial.flight == "C" ] <- 100
 
-initial.flight[] <- lapply(initial.flight, function(x) {
-  if(is.factor(x)) as.numeric(as.character(x)) else x
+initial.flight[initial.flight==""]<-"NA"
+initial.flight[initial.flight=="NA"]=NA
+
+# Omdan til numerisk
+initial.flight[] <- sapply(1:ncol(initial.flight), function(i) {
+  initial.flight[, i] <<- as.numeric(as.character(initial.flight[, i]))
 })
+
 
 initial.flight.respons <- apply(initial.flight, 1, mean,na.rm=T)
 
 initial.flight
 initial.flight.respons
-View(initial.flight.respons)
+#View(initial.flight.respons)
 
-#### Indlæs mean vandstand under de forskellige overflyvninger
+#### IndlÃ¦s mean vandstand under de forskellige overflyvninger
 Vandstand <- c(
   mean(c(78,89)),
   mean(c(48,20)),
@@ -117,7 +110,7 @@ Vandstand.corrected <- c(
 Vandstand
 
 
-Højvande <- c(12.10,
+HÃ¸jvande <- c(12.10,
   12.10,
   13.40,
   13.40,
@@ -179,14 +172,14 @@ Vandstand.aug.st.sep <- c(-50,
                           -52,
                           -59)
                      
-Højvande.aug.st.sep <- c(17.20,
+HÃ¸jvande.aug.st.sep <- c(17.20,
                          17.00,
                          17.00,
                          23.50,
                          23.50)
                      
 
-# Sæt vandstand og vandstand august sammen
+# SÃ¦t vandstand og vandstand august sammen
 Vandstand <- c(Vandstand.aug.st.sep,Vandstand.corrected)
 length(Vandstand)
 Vandstand <- Vandstand[1:26]
@@ -203,7 +196,7 @@ dates <- c('20-08','20-08','20-08','25-09','25-09',
 
 # combine nu flights og vandstand
 Respons_vandstand <- cbind.data.frame(initial.flight.respons,Vandstand)
-
+Respons_vandstand
 
 colnames(Respons_vandstand) <- c('Response','Vandstand')
 rownames(Respons_vandstand) <- c()
@@ -213,7 +206,7 @@ Respons_vandstand <- cbind.data.frame(
 
 Respons_vandstand
 
-# Add vector med klokkeslet
+# Add vector med klokkeslÃ¦t
 Flight.time
 Flight.time.aug.st.sep
 Flight.time.all <- c(Flight.time.aug.st.sep,
@@ -302,7 +295,7 @@ p_vandstand + geom_point(cex=2 ) +
 
 
 
-### Forsøg plot af både vand tidal level og vindstyrke
+### ForsÃ¸g plot af bÃ¥de vand tidal level og vindstyrke
 
 
 my.formula <- y ~ x 
@@ -394,7 +387,7 @@ equation2 <- function(x){coef(model)[2]*x+coef(model)[1]+coef(model)[3]}
 equation1(Respons_vandstand_vind$vind.midd)
 
 ############################## Vendt om ##############
-### Forsøg plot af både vand tidal level og vindstyrke
+### ForsÃ¸g plot af bÃ¥de vand tidal level og vindstyrke
 str(Respons_vandstand_vind)
 
 
