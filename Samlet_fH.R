@@ -361,6 +361,9 @@ p_UAS + geom_signif(comparisons = list(c("Phantom", "Mavic")), size = 0.8,
         legend.title = element_text(size = 13),legend.position = "top") +
   scale_y_continuous(limits=c(0,105),breaks=seq(0,100,10))
 
+
+nrow(new_FH_samlet)
+
 ######*** Vendt om til horizontal####
 ## Med ggplot **DE TO UAS MODELLER
 p_UAS <- ggboxplot(new_FH_samlet, x = "UAS", y = "hoejde",

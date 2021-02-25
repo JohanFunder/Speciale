@@ -11,15 +11,15 @@ acs
 
 #unique(acs$DM)
 
-# Indlæs mit data
+# Indl?s mit data
 
-# indlæs CSV filer
+# indl?s CSV filer
 directory <- "G:/Vadehavet/Frames_geo"
 
 initial <- file.path(directory,"/Initial_species_count.csv")
 x <- read.csv(file=initial, header= TRUE,na.strings=c("","NA"))
 
-View(x)
+# View(x)
 x_fac <- x[,-c(1)]
 
 str(x_fac)
@@ -29,72 +29,79 @@ str(x_ny)
 x_ny
 colnames(x_ny) <- factor(x$Species)
 
-#View(x_ny)
+library(data.table)
+setDT(x_ny, keep.rownames = TRUE)[]
 
-# udtræk af respons colonner
+#View(x_ny)
+x_ny$Respons_17
+
+# udtr?k af respons colonner
 # Lav dataframe med artsnavne
 artsnavne <- cbind.data.frame(rep('Avocet',29),rep('Dunlin',29),rep('Oystercatcher',29),rep('Golden Plover',29),rep('Banacle Gosse',29),
      rep('Greylag Goose',29),rep('Shelduck',29),rep('Bar-tailed Godwit',29),rep('Red Knot',29),rep('Common Gull',29),
      rep('Herring Gull',29),rep('Wigeon',29),rep('Northern Lapwing',29),rep('Curlew',29),rep('Pin-tailed Duck',29),
      rep('Mallard',29),rep('Greenshank',29))
 
-artsnavne <- cbind.data.frame(rep('Avocet',29),x_ny$Respons_1, rep('Dunlin',29),x_ny$Respons_2,
-                              rep('Oystercatcher',29),x_ny$Respons_3,rep('Golden Plover',29),x_ny$Respons_4,
-                              rep('Barnacle Goose',29),x_ny$Respons_5,rep('Greylag Goose',29),x_ny$Respons_6,
-                              rep('Shelduck',29),x_ny$Respons_7,rep('Bar-tailed Godwit',29),x_ny$Respons_8,
-                              rep('Red Knot',29),x_ny$Respons_9,rep('Common Gull',29),x_ny$Respons_10,
-                              rep('Herring Gull',29),x_ny$Respons_11,rep('Wigeon',29),x_ny$Respons_12,
-                              rep('Northern Lapwing',29),x_ny$Respons_13,rep('Curlew',29),x_ny$Respons_14,
-                              rep('Pin-tailed Duck',29),x_ny$Respons_15,rep('Mallard',29),x_ny$Respons_16,
-                              rep('Greenshank',29),x_ny$Respons_17)
+artsnavne <- cbind.data.frame(x_ny$rn,rep('Avocet',29),x_ny$Respons_1,x_ny$rn,rep('Dunlin',29),x_ny$Respons_2,
+                              x_ny$rn,rep('Oystercatcher',29),x_ny$Respons_3,x_ny$rn,rep('Golden Plover',29),x_ny$Respons_4,
+                              x_ny$rn,rep('Barnacle Goose',29),x_ny$Respons_5,x_ny$rn,rep('Greylag Goose',29),x_ny$Respons_6,
+                              x_ny$rn,rep('Shelduck',29),x_ny$Respons_7,x_ny$rn,rep('Bar-tailed Godwit',29),x_ny$Respons_8,
+                              x_ny$rn,rep('Red Knot',29),x_ny$Respons_9,x_ny$rn,rep('Common Gull',29),x_ny$Respons_10,
+                              x_ny$rn,rep('Herring Gull',29),x_ny$Respons_11,x_ny$rn,rep('Wigeon',29),x_ny$Respons_12,
+                              x_ny$rn,rep('Northern Lapwing',29),x_ny$Respons_13,x_ny$rn,rep('Curlew',29),x_ny$Respons_14,
+                              x_ny$rn,rep('Pin-tailed Duck',29),x_ny$Respons_15,x_ny$rn,rep('Mallard',29),x_ny$Respons_16,
+                              x_ny$rn,rep('Greenshank',29),x_ny$Respons_17)
 #View(artsnavne)
+str(artsnavne)
 
-colnames(artsnavne) <- c('Species','Response','Species','Response','Species','Response','Species','Response',
-                         'Species','Response','Species','Response','Species','Response','Species','Response',
-                         'Species','Response','Species','Response','Species','Response','Species','Response',
-                         'Species','Response','Species','Response','Species','Response','Species','Response',
-                         'Species','Response')
 
-godt <- rbind.data.frame(artsnavne[1:2],artsnavne[3:4],artsnavne[5:6],artsnavne[7:8],artsnavne[9:10],artsnavne[11:12],
-      artsnavne[13:14],artsnavne[15:16],artsnavne[17:18],artsnavne[19:20],artsnavne[21:22],artsnavne[23:24],
-      artsnavne[25:26],artsnavne[27:28],artsnavne[29:30],artsnavne[31:32],artsnavne[33:34])              
+colnames(artsnavne) <- c('UAV','Species','Response','UAV','Species','Response','UAV','Species','Response','UAV','Species','Response',
+                         'UAV','Species','Response','UAV','Species','Response','UAV','Species','Response','UAV','Species','Response',
+                         'UAV','Species','Response','UAV','Species','Response','UAV','Species','Response','UAV','Species','Response',
+                         'UAV','Species','Response','UAV','Species','Response','UAV','Species','Response','UAV','Species','Response',
+                         'UAV','Species','Response')
 
+godt <- rbind.data.frame(artsnavne[1:3],artsnavne[4:6],artsnavne[7:9],artsnavne[10:12],artsnavne[13:15],
+                         artsnavne[16:18],artsnavne[19:21],artsnavne[22:24],artsnavne[25:27],
+                         artsnavne[28:30],artsnavne[31:33],artsnavne[34:36],artsnavne[37:39],
+                         artsnavne[40:42],artsnavne[43:45],artsnavne[46:48],artsnavne[49:51])              
 godt <- na.omit(godt)
 godt
 
 godt_forstyr <- godt[!grepl("A", godt$Response),] 
 godt_forstyr <- data.frame(godt_forstyr)
 godt_forstyr <- godt[godt$Response %in% c('B','C'),]
+godt_forstyr
+
 # write
 write.csv(godt_forstyr, file = "G:/Vadehavet/Frames_geo/Response.csv")
 write.csv(godt, file = "G:/Vadehavet/Frames_geo/All_Response.csv")
-# Indlæs på ny
+# Indl?s p? ny
 Response <- file.path(directory,"/Response.csv")
 Response <- read.csv(file=Response, header= TRUE,na.strings=c("","NA"))
 All_response <- file.path(directory,"/All_response.csv")
 All_response <- read.csv(file=All_response, header= TRUE,na.strings=c("","NA"))
 
 # Mine endelige dataframes
-# Trim først efter UAV
-Response$X <- s<-gsub("(1).*","\\1",Response$X)
-Response$X <- gsub("\\.", "", Response$X)
-Response$X <- s<-gsub("(2).*","\\1",Response$X)
-All_response$X <- s<-gsub("(1).*","\\1",All_response$X)
-All_response$X <- gsub("\\.", "", All_response$X)
-All_response$X <- s<-gsub("(2).*","\\1",All_response$X)
+# Trim f?rst efter UAV
+Response$UAV <- gsub("\\..*","",Response$UAV)
 
+All_response$UAV <- gsub("\\..*","",All_response$UAV)
+
+Response
 # For hver UAV
-Response_UAV_1 <- Response[Response$X == 'UAV_1', ]
-Response_UAV_2 <- Response[Response$X == 'UAV_2', ]
-All_response_UAV_1 <- All_response[All_response$X == 'UAV_1', ]
-All_response_UAV_2 <- All_response[All_response$X == 'UAV_2', ]
-
+Response_UAV_1 <- Response[Response$UAV == 'UAV_1', ]
+Response_UAV_1
+Response_UAV_2 <- Response[Response$UAV == 'UAV_2', ]
+All_response_UAV_1 <- All_response[All_response$UAV == 'UAV_1', ]
+All_response_UAV_2 <- All_response[All_response$UAV == 'UAV_2', ]
+All_response_UAV_2
 
 
 # write
 write.csv(Response_UAV_1, file = "G:/Vadehavet/Frames_geo/Response_UAV_1.csv")
 write.csv(Response_UAV_2, file = "G:/Vadehavet/Frames_geo/Response_UAV_2.csv")
-# Indlæs på ny
+# Indl?s p? ny
 Response_UAV_1 <- file.path(directory,"/Response_UAV_1.csv")
 Response_UAV_1 <- read.csv(file=Response_UAV_1, header= TRUE)
 Response_UAV_2 <- file.path(directory,"/Response_UAV_2.csv")
@@ -105,21 +112,20 @@ Response_UAV_2
 
 ###########################################
 
-# Subset antal overflyvninger pr art pr UAV (preocenter)
+# Subset antal overflyvninger pr art pr UAV (procenter)
 
 # for Phantom
-fordeling_UAV_1 <- table(All_response_UAV_1[2:3])
-percent_UAV_1 <- prop.table(table(All_response_UAV_1[2:3]), 1)
+fordeling_UAV_1 <- table(All_response_UAV_1[3:4])
+percent_UAV_1 <- prop.table(table(All_response_UAV_1[3:4]), 1)
 percent_UAV_1 <- data.frame(percent_UAV_1)
 tilskema_UAV_1 <- percent_UAV_1
 tilskema_UAV_1$Freq <- percent_UAV_1$Freq*100 
-tilskema_UAV_1
 #View(fordeling_UAV_1)
 sum(fordeling_UAV_1)
 
 # for Mavic
-fordeling_UAV_2 <- table(All_response_UAV_2[2:3])
-percent_UAV_2 <- prop.table(table(All_response_UAV_2[2:3]), 1)
+fordeling_UAV_2 <- table(All_response_UAV_2[3:4])
+percent_UAV_2 <- prop.table(table(All_response_UAV_2[3:4]), 1)
 percent_UAV_2 <- data.frame(percent_UAV_2)
 percent_UAV_2 <- na.omit(percent_UAV_2)
 fordeling_UAV_2
@@ -132,7 +138,7 @@ tilskema_UAV_2
 
 
 
-# Vægt efter obs
+# V?gt efter obs
 Species <- rep(percent_UAV_1$Species,times=percent_UAV_1$Freq*100)
 Species <- data.frame(Species)
 Response <- rep(percent_UAV_1$Response,times=percent_UAV_1$Freq*100)
@@ -152,7 +158,7 @@ UAV_2_BC
 # write
 write.csv(UAV_1_BC, file = "G:/Vadehavet/Frames_geo/UAV_1_BC.csv")
 write.csv(UAV_2_BC, file = "G:/Vadehavet/Frames_geo/UAV_2_BC.csv")
-# Indlæs på ny
+# Indl?s p? ny
 UAV_1_BC <- file.path(directory,"/UAV_1_BC.csv")
 UAV_1_BC <- read.csv(file=UAV_1_BC, header= TRUE)
 UAV_2_BC <- file.path(directory,"/UAV_2_BC.csv")
@@ -168,7 +174,7 @@ PieDonut(UAV_2_BC,aes(pies=Species,donuts=Response),labelposition = 0,pieLabelSi
 
 
 ########################## **********************Plotly***************#######################
-library(plotly)
+library (plotly)
 # Disturbance fordleing ABC
 # FOr UAV 1
 
@@ -216,7 +222,7 @@ fig <- plot_ly(percent_UAV_1_navne, labels = ~Response, values = ~Freq,
 fig <- fig %>% add_pie(hole = 0.33)
 
 fig <- fig %>% add_pie(labels = ~Response, values = ~Freq,
-                       textposition = ifelse(as.numeric(percent_UAV_1_navne$Freq)<5,"outside","inside"),
+                       textposition = ifelse(as.numeric(percent_UAV_1_navne$Freq)<0.05,"outside","inside"),
                        textinfo = 'label+percent',
                        insidetextorientation='auto',
                        insidetextfont = list(color = '#FFFFFF'),
@@ -233,7 +239,7 @@ fig <- fig %>% layout(title = '',legend = list(font = list(size = 28)),
                       margin = list(t = 60, b = 0, l = 200, r = 0, pad = 0))
 
 fig <- fig %>% add_pie(labels = ~Response, values = ~Freq,
-                       textposition = ifelse(as.numeric(percent_UAV_1_navne$Freq)<10,"none","inside"),
+                       textposition = ifelse(as.numeric(percent_UAV_1_navne$Freq)<0.10,"none","inside"),
                        textinfo = 'label+percent',
                        insidetextorientation='auto',
                        insidetextfont = list(color = '#FFFFFF',size = 30),
@@ -245,7 +251,7 @@ fig <- fig %>% add_pie(labels = ~Response, values = ~Freq,
                        showlegend = T,hole = 0.33,text) 
 
 fig
-
+percent_UAV_1_navne$Freq
 ###### For UAV 2
 
 # Giv naven til ABC
@@ -291,7 +297,7 @@ fig <- fig %>% add_pie(hole = 0.33)
 
 
 fig <- fig %>% add_pie(labels = ~Response, values = ~Freq,
-                       textposition = ifelse(as.numeric(percent_UAV_2_navne$Freq)<2,"outside","inside"),
+                       textposition = ifelse(as.numeric(percent_UAV_2_navne$Freq)<0.02,"outside","inside"),
                        textinfo = 'label+percent',
                        insidetextorientation='auto',
                        insidetextfont = list(color = '#FFFFFF'),
@@ -308,7 +314,7 @@ fig <- fig %>% layout(title = '',legend = list(font = list(size = 28)),
                       margin = list(t = 60, b = 0, l = 200, r = 0, pad = 0))
 
 fig <- fig %>% add_pie(labels = ~Response, values = ~Freq,
-                       textposition = ifelse(as.numeric(percent_UAV_2_navne$Freq)<2,"none","inside"),
+                       textposition = ifelse(as.numeric(percent_UAV_2_navne$Freq)<0.02,"none","inside"),
                        textinfo = 'label+percent',
                        insidetextorientation='auto',
                        insidetextfont = list(color = '#FFFFFF',size = 30),
@@ -325,11 +331,11 @@ fig
 
 #######################************ For Species ****************
 ######## For UAV 1
-# Slet først alle A
+# Slet f?rst alle A
 percent_UAV_1_BC <- percent_UAV_1[!grepl("A", percent_UAV_1$Response),]
 percent_UAV_1_BC
 
-#Sæt først alle arter til mindst 1 %
+#S?t f?rst alle arter til mindst 1 %
 percent_UAV_1_BC_all <- percent_UAV_1_BC
 percent_UAV_1_BC_all_B <- percent_UAV_1_BC_all[!grepl("C", percent_UAV_1_BC_all$Response),]
 percent_UAV_1_BC_all_C <- percent_UAV_1_BC_all[!grepl("B", percent_UAV_1_BC_all$Response),]
@@ -356,7 +362,7 @@ percent_UAV_1_BC_all
 
 
 #######******* Samlet pie*********** #########
-# Sæt først farver
+# S?t f?rst farver
 colors_respons <- c('white','white','white','white','white','white','white','white','white','white','white',
                     'white',
                     'grey','grey','grey','darkorange','grey','darkorange',
@@ -381,7 +387,7 @@ p_samlet <- plot_ly(percent_UAV_1_BC_all) %>%
            text = ~paste(Freq,'%'),
            marker = list(colors = colors_respons,
                          line = list(color = '#FFFFFF', width = 1)),
-           hole = 0.9, sort = F,showlegend = F)  %>%
+           hole = 0.85, sort = F,showlegend = F)  %>%
 
    add_pie(percent_UAV_1_BC_all, labels = ~Species, values = ~Freq_all, 
            textposition = 'inside',
@@ -400,7 +406,7 @@ p_samlet <- plot_ly(percent_UAV_1_BC_all) %>%
 p_samlet <- p_samlet %>% layout(title = 'UAV 1 disturbance per waterbird species',
                                 legend = list(font = list(size = 20)),
                                 font=list(size = 25),annotations=list(text='Species', 
-                                                                      "showarrow"=F, font=list(size = 30)),
+                                                                      "showarrow"=F, font=list(size = 25)),
                                 margin = list(t = 60, b = 0, l = 200, r = 0, pad = 0))
 
 p_samlet <- p_samlet %>% add_pie(percent_UAV_1_BC_all, labels = ~Species, values = ~Freq_all, 
@@ -413,8 +419,8 @@ p_samlet <- p_samlet %>% add_pie(percent_UAV_1_BC_all, labels = ~Species, values
         marker = list(colors = colors_species,
                       line = list(color = '#FFFFFF', width = 1)), hole = 0.25,
         domain = list(
-           x = c(0.05, 0.95),
-           y = c(0.05, 0.95)),
+           x = c(0.075, 0.925),
+           y = c(0.075, 0.925)),
         sort = F,showlegend = T)
 
 p_samlet <- p_samlet %>% add_pie(percent_UAV_1_BC_all, labels = ~navn_klas, values = ~Freq, 
@@ -426,7 +432,7 @@ p_samlet <- p_samlet %>% add_pie(percent_UAV_1_BC_all, labels = ~navn_klas, valu
                                  text = ~paste(Freq,'%'),
                                  marker = list(colors = colors_respons,
                                                line = list(color = '#FFFFFF', width = 1)),
-                                 hole = 0.9, sort = F,showlegend = F)   
+                                 hole = 0.85, sort = F,showlegend = F)   
 
 
 p_samlet
@@ -437,11 +443,11 @@ p_samlet
 
 
 ######## For UAV 2
-# Slet først alle A
+# Slet f?rst alle A
 percent_UAV_2_BC <- percent_UAV_2[!grepl("A", percent_UAV_2$Response),]
 percent_UAV_2_BC
 
-#Sæt først alle arter til mindst 0.5 %
+#S?t f?rst alle arter til mindst 0.5 %
 percent_UAV_2_BC_all <- percent_UAV_2_BC
 percent_UAV_2_BC_all_B <- percent_UAV_2_BC_all[!grepl("C", percent_UAV_2_BC_all$Response),]
 percent_UAV_2_BC_all_C <- percent_UAV_2_BC_all[!grepl("B", percent_UAV_2_BC_all$Response),]
@@ -466,22 +472,25 @@ percent_UAV_2_BC_all$navn_klas <-  navn_klas
 percent_UAV_2_BC_all <- percent_UAV_2_BC_all[order(percent_UAV_2_BC_all$Freq_all),]
 percent_UAV_2_BC_all
 
-# Indsæt til sidst manglende fulgearter for UAV 2
-percent_UAV_1_BC_all$ID <- rownames(percent_UAV_1_BC_all)
-B.df <- subset(percent_UAV_1_BC_all, !(ID %in% rownames(percent_UAV_2_BC_all)))
+# Inds?t til sidst manglende fulgearter for UAV 2
+#percent_UAV_1_BC_all$ID <- rownames(percent_UAV_1_BC_all)
+#rownames(percent_UAV_1_BC_all)
+B.df <- subset(percent_UAV_1_BC_all, !(Species %in% percent_UAV_2_BC_all$Species))
 B.df
 B.df <-  replace(B.df, B.df==0, 0.005)
 B.df$Freq_all[ B.df$Freq_all<100 ] <- 0.005
 B.df$Freq[ B.df$Freq<100 ] <- 0.005
 B.df
-# sÆT SAMMEN til samlet dataframe
+# s?T SAMMEN til samlet dataframe
 percent_UAV_2_BC_all <- rbind(B.df[-c(6)],percent_UAV_2_BC_all)
 percent_UAV_2_BC_all
 # order til sidst
 percent_UAV_2_BC_all <- percent_UAV_2_BC_all[order(percent_UAV_2_BC_all$Freq_all),]
 
+percent_UAV_2_BC_all
+percent_UAV_1_BC_all
 #######******* Samlet pie*********** #########
-# Sæt først farver
+# S?t f?rst farver
 colors_respons <- c('white','white','white','white','white','white','white',
                     'white','white','white','white','white','white','white','white','white'
                     ,'white','white','grey','grey','grey','grey',
@@ -505,7 +514,7 @@ p_samlet <- plot_ly(percent_UAV_2_BC_all) %>%
            text = ~paste(Freq,'%'),
            marker = list(colors = colors_respons,
                          line = list(color = '#FFFFFF', width = 1)),
-           hole = 0.9, sort = F,showlegend = F)  %>%
+           hole = 0.85, sort = F,showlegend = F)  %>%
    
    add_pie(percent_UAV_2_BC_all, labels = ~Species, values = ~Freq_all, 
            textposition = 'inside',
@@ -524,7 +533,7 @@ p_samlet <- plot_ly(percent_UAV_2_BC_all) %>%
 p_samlet <- p_samlet %>% layout(title = 'UAV 2 disturbance per waterbird species',
                                 legend = list(font = list(size = 20)),
                                 font=list(size = 25),annotations=list(text='Species', 
-                                                                      "showarrow"=F, font=list(size = 30)),
+                                                                      "showarrow"=F, font=list(size = 25)),
                                 margin = list(t = 60, b = 0, l = 200, r = 0, pad = 0))
 
 p_samlet <- p_samlet %>% add_pie(percent_UAV_2_BC_all, labels = ~Species, values = ~Freq_all, 
@@ -537,8 +546,8 @@ p_samlet <- p_samlet %>% add_pie(percent_UAV_2_BC_all, labels = ~Species, values
                                  marker = list(colors = colors_species,
                                                line = list(color = '#FFFFFF', width = 1)), hole = 0.25,
                                  domain = list(
-                                    x = c(0.05, 0.95),
-                                    y = c(0.05, 0.95)),
+                                    x = c(0.075, 0.925),
+                                    y = c(0.075, 0.925)),
                                  sort = F,showlegend = T)
 
 p_samlet <- p_samlet %>% add_pie(percent_UAV_2_BC_all, labels = ~navn_klas, values = ~Freq, 
@@ -550,7 +559,7 @@ p_samlet <- p_samlet %>% add_pie(percent_UAV_2_BC_all, labels = ~navn_klas, valu
                                  text = ~paste(Freq,'%'),
                                  marker = list(colors = colors_respons,
                                                line = list(color = '#FFFFFF', width = 1)),
-                                 hole = 0.9, sort = F,showlegend = F)
+                                 hole = 0.85, sort = F,showlegend = F)
 
 p_samlet
 
