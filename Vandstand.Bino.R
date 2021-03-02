@@ -29,7 +29,7 @@ str(initial.flight)
 
 # Byt alle A,B,C ud med 1,2,3
 initial.flight[initial.flight == "A" ] <- 0
-initial.flight[initial.flight == "B" ] <- 50
+initial.flight[initial.flight == "B" ] <- 100
 initial.flight[initial.flight == "C" ] <- 100
 
 initial.flight[initial.flight==""]<-"NA"
@@ -77,62 +77,62 @@ Tidal_level
 Tidal_level.corrected <- c(
   mean(c(78,89)),
   mean(c(48,20)),
-  #Corrected - 26-09
+#Corrected - 26-09
   mean(c(20,12)),
   mean(c(90,105)),
   mean(c(15,40)),
-  #Corrected - 26-09
+#Corrected - 26-09
   mean(c(132,130)),
   mean(c(80,71)),
-  #Corrected - 27-09
+#Corrected - 27-09
   mean(c(60,40)),
   mean(c(35,20)),
-  #Corrected - 27-09
+#Corrected - 27-09
   mean(c(41,36)),
   mean(c(74,89)),
-  #  mean(c(93,99)),
-  #  mean(c(99,93)),
+#  mean(c(93,99)),
+#  mean(c(99,93)),
   mean(c(49,43)),
   mean(c(42,41)),
   mean(c(40,39)),
   mean(c(18,44)),
-  #  mean(c(45,62)),
+#  mean(c(45,62)),
   mean(c(116,124)),
   mean(c(127,123)),
-  #  mean(c(121,108)),
+#  mean(c(121,108)),
   mean(c(84,36)),
   mean(c(41,41)),
-  #  mean(c(77,95)),
+#  mean(c(77,95)),
   mean(c(98,100)),
-  #  mean(c(21,18)),
+#  mean(c(21,18)),
   mean(c(18,16))
 )
 Tidal_level
 
 
 Højvande <- c(12.10,
-              12.10,
-              13.40,
-              13.40,
-              06.10,
-              17.30,
-              17.30,
-              17.30,
-              06.30,
-              06.30,
-              06.30,
-              18.40,
-              18.40,
-              16.20,
-              16.20,
-              16.20,
-              09.10,
-              15.30,
-              15.30,
-              15.30,
-              03.50,
-              03.50
-)
+  12.10,
+  13.40,
+  13.40,
+  06.10,
+  17.30,
+  17.30,
+  17.30,
+  06.30,
+  06.30,
+  06.30,
+  18.40,
+  18.40,
+  16.20,
+  16.20,
+  16.20,
+  09.10,
+  15.30,
+  15.30,
+  15.30,
+  03.50,
+  03.50
+  )
 
 Flight.time <- c(
   '11.00-12.35',
@@ -165,19 +165,19 @@ Flight.time.aug.st.sep <- c('15.30-16.30',
                             '18.30-19.00',
                             '16.00-17.00',
                             '16.30-17.30')
-
+                        
 Tidal_level.aug.st.sep <- c(-50,
-                            -30,
-                            91,
-                            -52,
-                            -59)
-
+                          -30,
+                          91,
+                          -52,
+                          -59)
+                     
 Højvande.aug.st.sep <- c(17.20,
                          17.00,
                          17.00,
                          23.50,
                          23.50)
-
+                     
 
 # Sæt Tidal_level og Tidal_level august sammen
 Tidal_level <- c(Tidal_level.aug.st.sep,Tidal_level.corrected)
@@ -188,11 +188,11 @@ Tidal_level
 
 # add vector med dates
 dates <- c('20-08','20-08','20-08','25-09','25-09',
-           '26-09','26-09','26-09','26-09','26-09',
-           '27-09','27-09','27-09','27-09','03-10',
-           '03-10','04-10','04-10','04-10','04-10',
-           '17-10','17-10','23-10','14-11','14-11',
-           '15-11')
+  '26-09','26-09','26-09','26-09','26-09',
+  '27-09','27-09','27-09','27-09','03-10',
+  '03-10','04-10','04-10','04-10','04-10',
+  '17-10','17-10','23-10','14-11','14-11',
+  '15-11')
 
 # combine nu flights og Tidal_level
 Respons_Tidal_level <- cbind.data.frame(initial.flight.respons,Tidal_level)
@@ -229,7 +229,7 @@ p_Tidal_level + geom_point(cex=2 ) +
   geom_smooth(method = "lm", se = F,  fullrange = TRUE) + theme_bw() +
   theme(text = element_text(size=15)) + 
   xlab("Tidal level (cm)") + ylab("Disturbance (i.e. percent flushing)") +
-  stat_poly_eq(formula = my.formula, aes(label = paste0
+   stat_poly_eq(formula = my.formula, aes(label = paste0
                                          ("atop(", ",", ..rr.label.., ")")),
                rr.digits = 2, parse = TRUE, size = 4.5,
                eq.with.lhs = "y~`=`~",coef.digits = 3,
@@ -241,7 +241,7 @@ p_Tidal_level + geom_point(cex=2 ) +
                           "s.e." = "std.error", 
                           "italic(t)" = "statistic", 
                           "italic(P)" = "p.value"),
-              label.y = "top", label.x = "right", parse = TRUE, size=4.5)
+                          label.y = "top", label.x = "right", parse = TRUE, size=4.5)
 
 ## Lav plot med ligning
 my.formula <- y ~ x
@@ -274,9 +274,9 @@ Vind <- read.csv('G:/Vadehavet/Vandstand/Vind_Esbjerg.csv',header = T)
 Vind
 
 Wind_speed <- c(7.5,7.9,3.7,4.0,7.3,6.1,6.1,
-                5.7,5.3,5.6,3.6,4.8,6.9,3.4,
-                2.6,2.8,5.0,4.9,4.8,4.9,4.3,
-                3.1,3.3,4.3,3.4,6.7)
+               5.7,5.3,5.6,3.6,4.8,6.9,3.4,
+               2.6,2.8,5.0,4.9,4.8,4.9,4.3,
+               3.1,3.3,4.3,3.4,6.7)
 
 Respons_Tidal_level_vind <- cbind(Respons_Tidal_level,Wind_speed)
 
@@ -291,7 +291,7 @@ summary(vind)
 # Plot nu vindstyrke
 my.formula <- y ~ x
 p_Tidal_level <- ggplot(data = Respons_Tidal_level_vind, aes(x = Respons_Tidal_level_vind$Wind_speed,
-                                                             y = Respons_Tidal_level_vind$Response))
+                                                         y = Respons_Tidal_level_vind$Response))
 p_Tidal_level + geom_point(cex=2 ) +
   geom_smooth(method = "lm", se = F,  fullrange = TRUE) + theme_bw() +
   theme(text = element_text(size=15)) + 
@@ -314,7 +314,7 @@ p_Tidal_level + geom_point(cex=2 ) +
 # Plot med ligning
 my.formula <- y ~ x
 p_Tidal_level <- ggplot(data = Respons_Tidal_level_vind, aes(x = Wind_speed,
-                                                             y = Response))
+                                                         y = Response))
 p_Tidal_level + geom_point(cex=2 ) +
   geom_smooth(method = "lm", se = F,  fullrange = TRUE) + theme_bw() +
   theme(text = element_text(size=15)) + 
@@ -354,7 +354,7 @@ ggplot() +
                            y = Respons_Tidal_level_vind$Wind_speed*20), size = 2,
              color = "blue3") +
   geom_smooth(aes(x = Respons_Tidal_level_vind$Response, 
-                  y = Respons_Tidal_level_vind$Wind_speed*20)
+                            y = Respons_Tidal_level_vind$Wind_speed*20)
               , method = "lm", se = T,  fullrange = TRUE,
               color = "blue3") + 
   theme_bw() +
@@ -392,8 +392,8 @@ ggplot() +
               label.y = 0, label.x = "left", parse = TRUE, size=4.5) +
   
   stat_fit_glance(aes(x = Respons_Tidal_level_vind$Response, 
-                      y = Respons_Tidal_level_vind$Tidal_level,
-                      label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
+                                y = Respons_Tidal_level_vind$Tidal_level,
+                                label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
                   method = 'lm',
                   method.args = list(formula = my.formula),
                   geom = 'text',
@@ -401,8 +401,8 @@ ggplot() +
                   color='black') +
   
   stat_fit_glance(aes(x = Respons_Tidal_level_vind$Response, 
-                      y = Respons_Tidal_level_vind$Wind_speed,
-                      label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
+                                y = Respons_Tidal_level_vind$Wind_speed,
+                                label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
                   method = 'lm',
                   method.args = list(formula = my.formula),
                   geom = 'text',
@@ -438,8 +438,8 @@ summary(model)
 my.formula <- y ~ x 
 ggplot(Respons_Tidal_level_vind,
        aes(x=Tidal_level,y=Response,size=factor(Wind_speed))) + geom_point(alpha=0.5) + theme_bw() +
-  
-  geom_smooth(aes(y = Respons_Tidal_level_vind$Response, 
+
+    geom_smooth(aes(y = Respons_Tidal_level_vind$Response, 
                   x = Respons_Tidal_level_vind$Tidal_level)
               , method = "lm", se = F,  fullrange = T,
               color = "black",formula = my.formula,size=1)
@@ -468,9 +468,9 @@ ggplot() +
         axis.text.x.top = element_text(face="bold",color='blue3'),
         axis.title.x.top = element_text(color = "blue3")) + 
   ylab("Observed disturbance - flushed or disappeared (%)") +
-  
+
   ## LIGNING, RR OG P-VÆRDI FOR VIND  
-  
+
   stat_poly_eq(mapping = aes(y = Respons_Tidal_level_vind$Response, 
                              x = Respons_Tidal_level_vind$Wind_speed,
                              label = paste(..eq.label.., sep = "*`,`~")),
@@ -514,16 +514,16 @@ ggplot() +
                           "italic(P)" = "p.value"),
               label.y = "bottom", label.x = "left", parse = TRUE, size=4.5) +
   
-  #  stat_fit_glance(aes(y = Respons_Tidal_level_vind$Response, 
-  #                      x = Respons_Tidal_level_vind$Tidal_level,
-  #                      label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
-  #                  method = 'lm',
-  #                  method.args = list(formula = my.formula),
-  #                  geom = 'text',
-  #                  label.x = c(-54), label.y = c(48.), size = 4.5,
-  #                  color='black') +
+#  stat_fit_glance(aes(y = Respons_Tidal_level_vind$Response, 
+#                      x = Respons_Tidal_level_vind$Tidal_level,
+#                      label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
+#                  method = 'lm',
+#                  method.args = list(formula = my.formula),
+#                  geom = 'text',
+#                  label.x = c(-54), label.y = c(48.), size = 4.5,
+#                  color='black') +
   
-  #  stat_fit_glance(aes(y = Respons_Tidal_level_vind$Response, 
+#  stat_fit_glance(aes(y = Respons_Tidal_level_vind$Response, 
 #                      x = Respons_Tidal_level_vind$Wind_speed,
 #                      label = paste("p=", signif(..p.value.., digits = 2), sep = "")),
 #                  method = 'lm',
@@ -531,7 +531,7 @@ ggplot() +
 #                  geom = 'text',
 #                  label.x = c(141), label.y = c(48.), size = 4.5,
 #                  color='blue3') +
-scale_y_continuous(limits = c(-40,90),breaks = seq(0,100,10)) +
+  scale_y_continuous(limits = c(-40,90),breaks = seq(0,100,10)) +
   
   # Add a second axis and specify its features
   scale_x_continuous(name = "Tidal level (cm)", breaks = c(-80,-60,-40,-20,0,20,40,60,80,100,

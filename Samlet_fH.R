@@ -400,11 +400,16 @@ var.test(phan$hoejde,mavic$hoejde)
 library(car)
 leveneTest(new_FH_samlet[,"hoejde"], new_FH_samlet[,"UAS"], location="median", correction.method="zero.correction")
 
-# Fin median
+# Find median
 median(phan$hoejde)
 median(mavic$hoejde)
 mean(phan$hoejde)
 mean(mavic$hoejde)
+
+# Find interquatile range
+summaryStats(phan$hoejde, quartiles = TRUE)
+summaryStats(mavic$hoejde, quartiles = TRUE)
+
 
 ## ******* Grupperet Boxplot med signifikans - wilcoxon *******************
 # Box plot facetted by "art"
