@@ -548,6 +548,10 @@ model <- lm(Response ~ Tidal_level  + Wind_speed)
 
 summary(model)
 
+model_tidal <- lm(Response ~ Tidal_level)
+summary(model_tidal)
+model_wind <- lm(Response ~ Wind_speed)
+summary(model_wind)
 ##############################*********** For minimum altitude *********############################
 FH_samlet_tidevand_vind <- read.csv('G:/Vadehavet/Frames_geo/FH_samlet_tidevand_vind.csv',header = T)
 
