@@ -491,7 +491,7 @@ ggplot() +
                              x = Respons_Tidal_level_vind$Tidal_level,
                              label = paste(..eq.label.., sep = "*`,`~")),
                formula = my.formula,
-               rr.digits = 2, parse = TRUE, size = 4.5,
+               parse = TRUE, size = 4.5,
                label.x.npc = c(0.055), label.y = c(0.9), color='black') +
   
   stat_poly_eq(mapping = aes(y = Respons_Tidal_level_vind$Response, 
